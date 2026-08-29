@@ -1,0 +1,3262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaSense — Staff Dashboard</title>
+
+<style>
+:root{
+  --primary:#087f8c;
+  --primary-dark:#05616b;
+  --secondary:#10a58a;
+  --bg:#f4f7f8;
+  --card:#ffffff;
+  --text:#17323a;
+  --muted:#71848a;
+  --border:#e3eaec;
+  --danger:#dc4b4b;
+  --warning:#d99a17;
+  --success:#1b9a68;
+  --shadow:0 8px 25px rgba(22,55,63,.07);
+  --sidebar:255px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:var(--sidebar);
+  background:#fff;
+  border-right:1px solid var(--border);
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{
+  height:76px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.logo{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  font-size:21px;
+}
+
+.brand strong{
+  font-size:18px;
+}
+
+.brand small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:2px;
+}
+
+.nav{
+  padding:16px 12px;
+  overflow-y:auto;
+  flex:1;
+}
+
+.nav-title{
+  color:#9aa9ad;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  margin:12px 10px 8px;
+  text-transform:uppercase;
+}
+
+.nav-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  margin-bottom:3px;
+  border-radius:9px;
+  background:transparent;
+  color:#53676d;
+  text-align:left;
+  transition:.2s;
+}
+
+.nav-item:hover{
+  background:#eef8f7;
+  color:var(--primary);
+}
+
+.nav-item.active{
+  background:#e5f5f4;
+  color:var(--primary);
+  font-weight:700;
+}
+
+.nav-icon{
+  width:22px;
+  text-align:center;
+  font-size:17px;
+}
+
+.sidebar-user{
+  padding:14px;
+  border-top:1px solid var(--border);
+}
+
+.user-mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#d8eeee;
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.user-mini div:last-child{
+  min-width:0;
+}
+
+.user-mini strong{
+  display:block;
+  font-size:13px;
+}
+
+.user-mini span{
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  margin-left:var(--sidebar);
+  width:calc(100% - var(--sidebar));
+}
+
+.topbar{
+  height:76px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:0 25px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.menu-btn{
+  display:none;
+  background:#eef6f6;
+  width:40px;
+  height:40px;
+  border-radius:9px;
+}
+
+.search-wrap{
+  position:relative;
+  flex:1;
+  max-width:650px;
+}
+
+.search-box{
+  width:100%;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0 45px 0 42px;
+  outline:none;
+  background:#f7fafb;
+}
+
+.search-box:focus{
+  border-color:var(--primary);
+  background:#fff;
+}
+
+.search-icon{
+  position:absolute;
+  left:14px;
+  top:12px;
+  color:var(--muted);
+}
+
+.scan-btn{
+  position:absolute;
+  right:6px;
+  top:5px;
+  height:34px;
+  width:36px;
+  border-radius:7px;
+  background:#e4f4f2;
+  color:var(--primary);
+}
+
+.search-results{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  display:none;
+  overflow:hidden;
+  z-index:200;
+}
+
+.search-result{
+  padding:12px 15px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #f0f3f4;
+  cursor:pointer;
+}
+
+.search-result:hover{
+  background:#f4faf9;
+}
+
+.result-name{
+  font-weight:700;
+  font-size:13px;
+}
+
+.result-sub{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:3px;
+}
+
+.result-price{
+  color:var(--primary);
+  font-weight:700;
+}
+
+.top-actions{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:9px;
+  background:#f3f7f8;
+  color:#53676d;
+  position:relative;
+}
+
+.badge-dot{
+  position:absolute;
+  right:8px;
+  top:7px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--danger);
+}
+
+.profile-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:white;
+  padding:3px 7px;
+}
+
+.profile-btn .avatar{
+  width:36px;
+  height:36px;
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+  padding:25px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.page-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:22px;
+}
+
+.page-heading h1{
+  font-size:25px;
+}
+
+.page-heading p{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:5px;
+}
+
+.btn{
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:white;
+}
+
+.btn-primary:hover{
+  background:var(--primary-dark);
+}
+
+.btn-light{
+  background:#edf5f5;
+  color:var(--primary);
+}
+
+.btn-danger{
+  background:#fff0f0;
+  color:var(--danger);
+}
+
+.btn-success{
+  background:#e9f8f1;
+  color:var(--success);
+}
+
+/* ================= CARDS ================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.stat-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.stat-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stat-label{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.stat-icon{
+  width:38px;
+  height:38px;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e8f5f4;
+  color:var(--primary);
+}
+
+.stat-value{
+  font-size:25px;
+  font-weight:800;
+  margin-top:12px;
+}
+
+.stat-change{
+  font-size:11px;
+  margin-top:7px;
+  color:var(--success);
+}
+
+/* ================= GRID ================= */
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1.45fr 1fr;
+  gap:18px;
+}
+
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.card-head{
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.card-head h3{
+  font-size:15px;
+}
+
+.card-head span{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.card-body{
+  padding:18px;
+}
+
+/* ================= QUICK ACTIONS ================= */
+
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.quick{
+  border:1px solid var(--border);
+  background:#fafcfc;
+  padding:16px 10px;
+  border-radius:9px;
+  text-align:center;
+  color:var(--text);
+}
+
+.quick:hover{
+  border-color:#acd9d5;
+  background:#eff9f8;
+}
+
+.quick-icon{
+  font-size:22px;
+  margin-bottom:7px;
+}
+
+.quick span{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrap{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,td{
+  padding:13px 16px;
+  text-align:left;
+  border-bottom:1px solid #edf1f2;
+  font-size:12px;
+}
+
+th{
+  color:#7c8d91;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  background:#fafcfc;
+}
+
+.status{
+  display:inline-flex;
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:700;
+}
+
+.status.success{
+  background:#e8f7ef;
+  color:var(--success);
+}
+
+.status.warning{
+  background:#fff6df;
+  color:#aa7811;
+}
+
+.status.danger{
+  background:#fff0f0;
+  color:var(--danger);
+}
+
+.status.info{
+  background:#eaf5f8;
+  color:#257b91;
+}
+
+/* ================= ALERTS ================= */
+
+.alert-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.alert{
+  display:flex;
+  gap:10px;
+  padding:11px;
+  border-radius:9px;
+  background:#fafcfc;
+}
+
+.alert-icon{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+}
+
+.alert.warning .alert-icon{
+  background:#fff3d2;
+}
+
+.alert.danger .alert-icon{
+  background:#ffe8e8;
+}
+
+.alert.info .alert-icon{
+  background:#e7f4f7;
+}
+
+.alert strong{
+  font-size:12px;
+}
+
+.alert p{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+/* ================= POS ================= */
+
+.pos-grid{
+  display:grid;
+  grid-template-columns:1.4fr .8fr;
+  gap:18px;
+}
+
+.pos-search{
+  margin-bottom:15px;
+}
+
+.input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:11px 12px;
+  outline:none;
+  background:#fff;
+}
+
+.input:focus{
+  border-color:var(--primary);
+}
+
+.cart-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 0;
+  border-bottom:1px solid #edf1f2;
+}
+
+.cart-name{
+  font-weight:700;
+  font-size:12px;
+}
+
+.cart-meta{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px;
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.qty button{
+  width:26px;
+  height:26px;
+  border-radius:6px;
+  background:#edf5f5;
+  color:var(--primary);
+}
+
+.total-box{
+  margin-top:15px;
+  padding-top:15px;
+  border-top:1px solid var(--border);
+}
+
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  padding:5px 0;
+  font-size:12px;
+}
+
+.total-row.total{
+  font-size:18px;
+  font-weight:800;
+  margin-top:5px;
+}
+
+/* ================= DETAIL ================= */
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.detail{
+  background:#f8fafb;
+  border-radius:8px;
+  padding:11px;
+}
+
+.detail label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:4px;
+}
+
+.detail strong{
+  font-size:12px;
+}
+
+.ai-box{
+  margin-top:18px;
+  border:1px solid #b8dfdb;
+  background:#effaf8;
+  border-radius:10px;
+  padding:15px;
+}
+
+.ai-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--primary);
+  font-weight:800;
+  font-size:13px;
+}
+
+.ai-box p{
+  font-size:11px;
+  color:#527177;
+  line-height:1.6;
+  margin:8px 0;
+}
+
+.ai-item{
+  background:white;
+  padding:9px;
+  border-radius:7px;
+  margin-top:7px;
+  font-size:11px;
+}
+
+/* ================= FORMS ================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.form-group label{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+.form-actions{
+  margin-top:20px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+/* ================= MODAL ================= */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(14,37,42,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:500;
+  padding:20px;
+}
+
+.modal-overlay.show{
+  display:flex;
+}
+
+.modal{
+  background:white;
+  width:min(650px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+
+.modal-head{
+  padding:17px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+}
+
+.modal-head h3{
+  font-size:16px;
+}
+
+.close{
+  background:#f2f5f6;
+  width:30px;
+  height:30px;
+  border-radius:7px;
+}
+
+.modal-body{
+  padding:20px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  background:#16383f;
+  color:white;
+  padding:13px 17px;
+  border-radius:9px;
+  font-size:12px;
+  box-shadow:var(--shadow);
+  transform:translateY(100px);
+  opacity:0;
+  transition:.3s;
+  z-index:1000;
+}
+
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid-2,
+  .pos-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:760px){
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .menu-btn{
+    display:block;
+  }
+
+  .top-actions .profile-btn span{
+    display:none;
+  }
+
+  .content{
+    padding:16px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .full{
+    grid-column:auto;
+  }
+}
+
+@media(max-width:500px){
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .quick-actions{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .page-heading{
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .page-heading h1{
+    font-size:21px;
+  }
+
+  .topbar{
+    padding:0 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="brand">
+    <div class="logo">P</div>
+    <div>
+      <strong>PharmaSense</strong>
+      <small>Pharmacy Management</small>
+    </div>
+  </div>
+
+  <nav class="nav">
+
+    <div class="nav-title">Main</div>
+
+    <button class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">🏠</span> Dashboard
+    </button>
+
+    <button class="nav-item" data-page="pos">
+      <span class="nav-icon">💳</span> POS / Billing
+    </button>
+
+    <button class="nav-item" data-page="search">
+      <span class="nav-icon">🔎</span> Drug Search
+    </button>
+
+    <button class="nav-item" onclick="openScanner()">
+      <span class="nav-icon">▣</span> Barcode Scanner
+    </button>
+
+    <div class="nav-title">Operations</div>
+
+    <button class="nav-item" data-page="customers">
+      <span class="nav-icon">👥</span> Customers
+    </button>
+
+    <button class="nav-item" data-page="sales">
+      <span class="nav-icon">🧾</span> My Sales
+    </button>
+
+    <button class="nav-item" data-page="refunds">
+      <span class="nav-icon">↩</span> Returns & Refunds
+    </button>
+
+    <div class="nav-title">My Account</div>
+
+    <button class="nav-item" data-page="attendance">
+      <span class="nav-icon">🕐</span> My Attendance
+    </button>
+
+    <button class="nav-item" data-page="profile">
+      <span class="nav-icon">👤</span> My Profile
+    </button>
+
+    <button class="nav-item" data-page="help">
+      <span class="nav-icon">❓</span> Help
+    </button>
+
+    <button class="nav-item" onclick="logout()">
+      <span class="nav-icon">🚪</span> Logout
+    </button>
+
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-mini">
+      <div class="avatar">JS</div>
+      <div>
+        <strong>John Staff</strong>
+        <span>Cashier / Staff</span>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+<header class="topbar">
+
+  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
+  <div class="search-wrap">
+
+    <span class="search-icon">🔎</span>
+
+    <input
+      id="globalSearch"
+      class="search-box"
+      placeholder="Search medicine by brand name, drug name, code or barcode..."
+      autocomplete="off"
+      oninput="globalDrugSearch(this.value)"
+    >
+
+    <button class="scan-btn" onclick="openScanner()">▣</button>
+
+    <div class="search-results" id="searchResults"></div>
+
+  </div>
+
+  <div class="top-actions">
+
+    <button class="icon-btn" onclick="showPage('alerts')" title="Alerts">
+      🔔
+      <span class="badge-dot"></span>
+    </button>
+
+    <button class="profile-btn" onclick="showPage('profile')">
+      <div class="avatar">JS</div>
+      <span>John Staff</span>
+    </button>
+
+  </div>
+
+</header>
+
+<section class="content">
+
+<!-- ================= DASHBOARD ================= -->
+
+<div class="page active" id="dashboard">
+
+  <div class="page-heading">
+    <div>
+      <h1>Staff Dashboard</h1>
+      <p>Welcome back, John. Here is your pharmacy activity today.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="showPage('pos')">
+      + New Sale
+    </button>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Today's Sales</span>
+        <div class="stat-icon">₦</div>
+      </div>
+      <div class="stat-value" id="todaySales">₦185,500</div>
+      <div class="stat-change">↑ 12.4% from yesterday</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Transactions</span>
+        <div class="stat-icon">🧾</div>
+      </div>
+      <div class="stat-value" id="transactionCount">42</div>
+      <div class="stat-change">Today's completed sales</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Items Sold</span>
+        <div class="stat-icon">💊</div>
+      </div>
+      <div class="stat-value">128</div>
+      <div class="stat-change">Across 42 transactions</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Current Cart</span>
+        <div class="stat-icon">🛒</div>
+      </div>
+      <div class="stat-value" id="cartCount">3</div>
+      <div class="stat-change">Items waiting for checkout</div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+
+      <div class="card-head">
+        <h3>Quick Actions</h3>
+        <span>Frequently used</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="quick-actions">
+
+          <button class="quick" onclick="showPage('pos')">
+            <div class="quick-icon">💳</div>
+            <span>New Sale</span>
+          </button>
+
+          <button class="quick" onclick="showPage('search')">
+            <div class="quick-icon">🔎</div>
+            <span>Search Drug</span>
+          </button>
+
+          <button class="quick" onclick="openScanner()">
+            <div class="quick-icon">▣</div>
+            <span>Scan Barcode</span>
+          </button>
+
+          <button class="quick" onclick="showPage('customers')">
+            <div class="quick-icon">👥</div>
+            <span>Customer</span>
+          </button>
+
+          <button class="quick" onclick="showPage('sales')">
+            <div class="quick-icon">🧾</div>
+            <span>My Sales</span>
+          </button>
+
+          <button class="quick" onclick="showPage('refunds')">
+            <div class="quick-icon">↩</div>
+            <span>Refund</span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-head">
+        <h3>Important Alerts</h3>
+        <span>Permitted alerts</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="alert-list">
+
+          <div class="alert warning">
+            <div class="alert-icon">⚠️</div>
+            <div>
+              <strong>Expiring Medicine</strong>
+              <p>Amoxicillin 500mg — expires in 18 days.</p>
+            </div>
+          </div>
+
+          <div class="alert danger">
+            <div class="alert-icon">!</div>
+            <div>
+              <strong>Out of Stock</strong>
+              <p>Artemether/Lumefantrine 20/120mg is unavailable.</p>
+            </div>
+          </div>
+
+          <div class="alert info">
+            <div class="alert-icon">ℹ</div>
+            <div>
+              <strong>Safety Notice</strong>
+              <p>Prescription-required medicine selected recently.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <br>
+
+  <div class="card">
+
+    <div class="card-head">
+      <h3>Recent Sales</h3>
+      <button class="btn btn-light" onclick="showPage('sales')">View All</button>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Receipt</th>
+            <th>Time</th>
+            <th>Items</th>
+            <th>Payment</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>#PS-10428</td>
+            <td>12:18 PM</td>
+            <td>4</td>
+            <td>Cash</td>
+            <td>₦12,500</td>
+            <td><span class="status success">Completed</span></td>
+          </tr>
+
+          <tr>
+            <td>#PS-10427</td>
+            <td>11:46 AM</td>
+            <td>2</td>
+            <td>Card</td>
+            <td>₦7,800</td>
+            <td><span class="status success">Completed</span></td>
+          </tr>
+
+          <tr>
+            <td>#PS-10426</td>
+            <td>11:12 AM</td>
+            <td>6</td>
+            <td>Transfer</td>
+            <td>₦18,200</td>
+            <td><span class="status success">Completed</span></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= POS ================= -->
+
+<div class="page" id="pos">
+
+  <div class="page-heading">
+    <div>
+      <h1>POS / Billing</h1>
+      <p>Create a new pharmacy sale.</p>
+    </div>
+
+    <button class="btn btn-light" onclick="clearCart()">Clear Cart</button>
+  </div>
+
+  <div class="pos-grid">
+
+    <div class="card">
+
+      <div class="card-head">
+        <h3>Select Medicine</h3>
+        <span>Search or scan</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="search-wrap pos-search">
+          <span class="search-icon">🔎</span>
+
+          <input
+            id="posSearch"
+            class="search-box"
+            placeholder="Search by brand name..."
+            oninput="posSearchDrug(this.value)"
+          >
+
+          <div class="search-results" id="posResults"></div>
+        </div>
+
+        <div id="selectedDrugArea">
+
+          <div class="detail-grid">
+
+            <div class="detail">
+              <label>Selected Medicine</label>
+              <strong>Paracetamol 500mg</strong>
+            </div>
+
+            <div class="detail">
+              <label>Brand</label>
+              <strong>Panadol</strong>
+            </div>
+
+            <div class="detail">
+              <label>Available Stock</label>
+              <strong>120 Tablets</strong>
+            </div>
+
+            <div class="detail">
+              <label>Selling Price</label>
+              <strong>₦500 / Pack</strong>
+            </div>
+
+          </div>
+
+          <br>
+
+          <button
+            class="btn btn-primary"
+            onclick="addToCart('Panadol 500mg',500)"
+          >
+            + Add to Cart
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-head">
+        <h3>Current Cart</h3>
+        <span id="cartLabel">3 items</span>
+      </div>
+
+      <div class="card-body">
+
+        <div id="cartItems">
+
+          <div class="cart-item">
+            <div>
+              <div class="cart-name">Panadol 500mg</div>
+              <div class="cart-meta">₦500 × 2</div>
+            </div>
+
+            <div class="qty">
+              <button onclick="changeQty(-1)">−</button>
+              <strong>2</strong>
+              <button onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <div class="cart-item">
+            <div>
+              <div class="cart-name">Vitamin C 1000mg</div>
+              <div class="cart-meta">₦2,500 × 1</div>
+            </div>
+
+            <div class="qty">
+              <button>−</button>
+              <strong>1</strong>
+              <button>+</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="total-box">
+
+          <div class="total-row">
+            <span>Subtotal</span>
+            <strong>₦3,500</strong>
+          </div>
+
+          <div class="total-row">
+            <span>Discount</span>
+            <strong>₦0</strong>
+          </div>
+
+          <div class="total-row">
+            <span>Tax</span>
+            <strong>₦0</strong>
+          </div>
+
+          <div class="total-row total">
+            <span>Total</span>
+            <strong>₦3,500</strong>
+          </div>
+
+          <br>
+
+          <button class="btn btn-primary" style="width:100%" onclick="checkout()">
+            Proceed to Payment
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= DRUG SEARCH ================= -->
+
+<div class="page" id="search">
+
+  <div class="page-heading">
+    <div>
+      <h1>Drug Search</h1>
+      <p>Search medicines by brand name, drug name, code or barcode.</p>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <input
+        class="input"
+        id="drugPageSearch"
+        placeholder="Start typing brand name e.g. Pan..."
+        oninput="drugPageSearch(this.value)"
+      >
+
+    </div>
+
+  </div>
+
+  <br>
+
+  <div class="card">
+
+    <div class="card-head">
+      <h3>Medicine Results</h3>
+      <span id="resultCount">6 medicines</span>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Brand Name</th>
+            <th>Medicine</th>
+            <th>Form</th>
+            <th>Strength</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="drugTable">
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= CUSTOMERS ================= -->
+
+<div class="page" id="customers">
+
+  <div class="page-heading">
+    <div>
+      <h1>Customers</h1>
+      <p>Search and manage permitted customer records.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="openCustomerModal()">+ Add Customer</button>
+  </div>
+
+  <div class="card">
+
+    <div class="card-body">
+      <input class="input" placeholder="Search customer by name or phone..." oninput="filterCustomers(this.value)">
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Customer ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Last Purchase</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="customerTable">
+
+          <tr>
+            <td>CUS-001</td>
+            <td>Mary James</td>
+            <td>0803 456 7890</td>
+            <td>Today</td>
+            <td><button class="btn btn-light">View</button></td>
+          </tr>
+
+          <tr>
+            <td>CUS-002</td>
+            <td>Daniel Musa</td>
+            <td>0812 777 2291</td>
+            <td>Yesterday</td>
+            <td><button class="btn btn-light">View</button></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= SALES ================= -->
+
+<div class="page" id="sales">
+
+  <div class="page-heading">
+    <div>
+      <h1>My Sales</h1>
+      <p>View your completed pharmacy transactions.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat-card">
+      <span class="stat-label">Today's Sales</span>
+      <div class="stat-value">₦185,500</div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Transactions</span>
+      <div class="stat-value">42</div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Average Sale</span>
+      <div class="stat-value">₦4,417</div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Refunds</span>
+      <div class="stat-value">2</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-head">
+      <h3>Sales History</h3>
+      <button class="btn btn-light">Export</button>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Receipt</th>
+            <th>Date/Time</th>
+            <th>Items</th>
+            <th>Payment</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>#PS-10428</td>
+            <td>28 Aug 2026, 12:18</td>
+            <td>4</td>
+            <td>Cash</td>
+            <td>₦12,500</td>
+            <td><button class="btn btn-light" onclick="showToast('Opening receipt...')">View</button></td>
+          </tr>
+
+          <tr>
+            <td>#PS-10427</td>
+            <td>28 Aug 2026, 11:46</td>
+            <td>2</td>
+            <td>Card</td>
+            <td>₦7,800</td>
+            <td><button class="btn btn-light">View</button></td>
+          </tr>
+
+          <tr>
+            <td>#PS-10426</td>
+            <td>28 Aug 2026, 11:12</td>
+            <td>6</td>
+            <td>Transfer</td>
+            <td>₦18,200</td>
+            <td><button class="btn btn-light">View</button></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= REFUNDS ================= -->
+
+<div class="page" id="refunds">
+
+  <div class="page-heading">
+    <div>
+      <h1>Returns & Refunds</h1>
+      <p>Process returns according to your assigned permissions.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="openRefundModal()">
+      + Process Return
+    </button>
+  </div>
+
+  <div class="card">
+
+    <div class="card-head">
+      <h3>My Return / Refund History</h3>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Refund ID</th>
+            <th>Receipt</th>
+            <th>Reason</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>REF-0021</td>
+            <td>#PS-10398</td>
+            <td>Wrong item supplied</td>
+            <td>₦3,500</td>
+            <td>Cash</td>
+            <td><span class="status success">Completed</span></td>
+          </tr>
+
+          <tr>
+            <td>REF-0020</td>
+            <td>#PS-10381</td>
+            <td>Customer return</td>
+            <td>₦2,000</td>
+            <td>Transfer</td>
+            <td><span class="status warning">Pending Approval</span></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= ATTENDANCE ================= -->
+
+<div class="page" id="attendance">
+
+  <div class="page-heading">
+    <div>
+      <h1>My Attendance</h1>
+      <p>View your attendance records.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="clockIn()">Clock In</button>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat-card">
+      <span class="stat-label">Today's Status</span>
+      <div class="stat-value" id="attendanceStatus">Present</div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Clock In</span>
+      <div class="stat-value">08:03 AM</div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Clock Out</span>
+      <div class="stat-value">--:--</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-head">
+      <h3>Attendance History</h3>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Clock In</th>
+            <th>Clock Out</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>28 Aug 2026</td>
+            <td>08:03 AM</td>
+            <td>--</td>
+            <td><span class="status success">Present</span></td>
+          </tr>
+
+          <tr>
+            <td>27 Aug 2026</td>
+            <td>08:00 AM</td>
+            <td>02:10 PM</td>
+            <td><span class="status success">Present</span></td>
+          </tr>
+
+          <tr>
+            <td>26 Aug 2026</td>
+            <td>08:14 AM</td>
+            <td>02:03 PM</td>
+            <td><span class="status warning">Late</span></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= PROFILE ================= -->
+
+<div class="page" id="profile">
+
+  <div class="page-heading">
+    <div>
+      <h1>My Profile</h1>
+      <p>Your PharmaSense staff account.</p>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div style="display:flex;align-items:center;gap:15px;margin-bottom:25px">
+        <div class="avatar" style="width:65px;height:65px;font-size:20px">JS</div>
+        <div>
+          <h2 style="font-size:18px">John Staff</h2>
+          <p style="font-size:12px;color:var(--muted)">Cashier / Staff · Active</p>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+
+        <div class="detail">
+          <label>Employee ID</label>
+          <strong>EMP-004</strong>
+        </div>
+
+        <div class="detail">
+          <label>Username</label>
+          <strong>john.staff</strong>
+        </div>
+
+        <div class="detail">
+          <label>Role</label>
+          <strong>Cashier / Staff</strong>
+        </div>
+
+        <div class="detail">
+          <label>Account Status</label>
+          <strong>Active</strong>
+        </div>
+
+        <div class="detail">
+          <label>Phone</label>
+          <strong>0806 123 4567</strong>
+        </div>
+
+        <div class="detail">
+          <label>Email</label>
+          <strong>john@pharmasense.local</strong>
+        </div>
+
+      </div>
+
+      <br>
+
+      <button class="btn btn-primary" onclick="openPasswordModal()">
+        Change Password
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= HELP ================= -->
+
+<div class="page" id="help">
+
+  <div class="page-heading">
+    <div>
+      <h1>Help & Support</h1>
+      <p>Learn how to use PharmaSense.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Quick Guides</h3>
+      </div>
+
+      <div class="card-body">
+
+        <div class="alert info">
+          <div class="alert-icon">💳</div>
+          <div>
+            <strong>How to make a sale</strong>
+            <p>Open POS → search/scan medicine → add to cart → checkout → payment.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="alert info">
+          <div class="alert-icon">▣</div>
+          <div>
+            <strong>Barcode scanning</strong>
+            <p>Click the scanner button and scan the medicine barcode.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="alert info">
+          <div class="alert-icon">💊</div>
+          <div>
+            <strong>Drug information</strong>
+            <p>Click a medicine to view its available details and AI safety suggestions.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Need Assistance?</h3>
+      </div>
+
+      <div class="card-body">
+
+        <p style="font-size:13px;line-height:1.7;color:var(--muted)">
+          For account, permission, system or pharmacy configuration issues,
+          contact your administrator.
+        </p>
+
+        <br>
+
+        <button class="btn btn-primary" onclick="showToast('Support request opened.')">
+          Contact Support
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= ALERTS ================= -->
+
+<div class="page" id="alerts">
+
+  <div class="page-heading">
+    <div>
+      <h1>Alerts</h1>
+      <p>Important alerts available to your account.</p>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="alert warning">
+        <div class="alert-icon">⚠️</div>
+        <div>
+          <strong>Amoxicillin 500mg Expiring Soon</strong>
+          <p>Batch AMX-2026-04 expires in 18 days.</p>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="alert danger">
+        <div class="alert-icon">!</div>
+        <div>
+          <strong>Medicine Out of Stock</strong>
+          <p>Artemether/Lumefantrine 20/120mg is currently unavailable.</p>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="alert info">
+        <div class="alert-icon">🤖</div>
+        <div>
+          <strong>AI Safety Warning</strong>
+          <p>A recent prescription requires pharmacist review.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+</main>
+</div>
+
+<!-- ================= DRUG DETAIL MODAL ================= -->
+
+<div class="modal-overlay" id="drugModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3 id="drugModalTitle">Drug Details</h3>
+      <button class="close" onclick="closeModal('drugModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="detail-grid" id="drugDetails"></div>
+
+      <div class="ai-box">
+
+        <div class="ai-title">
+          🤖 AI Safety Suggestions
+        </div>
+
+        <p>
+          AI-assisted information is decision support only.
+          Professional clinical judgment remains responsible for final decisions.
+        </p>
+
+        <div class="ai-item">
+          <strong>⚠️ Prescription:</strong>
+          Verify prescription requirement before dispensing where applicable.
+        </div>
+
+        <div class="ai-item">
+          <strong>💡 Dosage:</strong>
+          Follow the prescribed dosage and patient-specific instructions.
+        </div>
+
+        <div class="ai-item">
+          <strong>🔎 Safety Check:</strong>
+          Check allergies, contraindications and relevant interactions.
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="btn btn-light" onclick="showToast('AI explanation opened.')">
+            Why was this flagged?
+          </button>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-light" onclick="closeModal('drugModal')">
+          Close
+        </button>
+
+        <button class="btn btn-primary" onclick="addSelectedDrugToCart()">
+          Add to POS
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= SCANNER MODAL ================= -->
+
+<div class="modal-overlay" id="scannerModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Barcode Scanner</h3>
+      <button class="close" onclick="closeModal('scannerModal')">×</button>
+    </div>
+
+    <div class="modal-body" style="text-align:center">
+
+      <div style="
+        height:210px;
+        border:2px dashed #a9d5d2;
+        border-radius:12px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction:column;
+        gap:10px;
+        background:#f4fbfa;
+      ">
+
+        <div style="font-size:55px">▥</div>
+        <strong>Position barcode inside scanner area</strong>
+        <span style="font-size:11px;color:var(--muted)">
+          Camera scanner interface
+        </span>
+
+      </div>
+
+      <br>
+
+      <button class="btn btn-primary" onclick="simulateScan()">
+        Simulate Barcode Scan
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= PAYMENT MODAL ================= -->
+
+<div class="modal-overlay" id="paymentModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Payment</h3>
+      <button class="close" onclick="closeModal('paymentModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="detail-grid">
+
+        <div class="detail">
+          <label>Subtotal</label>
+          <strong>₦3,500</strong>
+        </div>
+
+        <div class="detail">
+          <label>Total</label>
+          <strong>₦3,500</strong>
+        </div>
+
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select class="input">
+          <option>Cash</option>
+          <option>Card</option>
+          <option>Bank Transfer</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Amount Received</label>
+        <input class="input" id="amountReceived" type="number" placeholder="Enter amount">
+      </div>
+
+      <div class="ai-box" style="margin-top:15px">
+        <strong>Change</strong>
+        <div style="font-size:22px;font-weight:800;margin-top:5px" id="changeAmount">
+          ₦0
+        </div>
+      </div>
+
+      <div class="form-actions">
+
+        <button class="btn btn-light" onclick="closeModal('paymentModal')">
+          Cancel
+        </button>
+
+        <button class="btn btn-primary" onclick="completeSale()">
+          Confirm Payment
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= CUSTOMER MODAL ================= -->
+
+<div class="modal-overlay" id="customerModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Add Customer</h3>
+      <button class="close" onclick="closeModal('customerModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Customer Name</label>
+          <input class="input" id="customerName" placeholder="Full name">
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input class="input" id="customerPhone" placeholder="0800 000 0000">
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <input class="input" placeholder="Optional">
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <input class="input" placeholder="Optional">
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-light" onclick="closeModal('customerModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveCustomer()">Save Customer</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= REFUND MODAL ================= -->
+
+<div class="modal-overlay" id="refundModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Process Return / Refund</h3>
+      <button class="close" onclick="closeModal('refundModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Receipt Number</label>
+        <input class="input" placeholder="e.g. PS-10428">
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Return Reason</label>
+        <select class="input">
+          <option>Select reason</option>
+          <option>Wrong item supplied</option>
+          <option>Customer return</option>
+          <option>Damaged product</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Refund Amount</label>
+        <input class="input" type="number" placeholder="₦0">
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Refund Method</label>
+        <select class="input">
+          <option>Cash</option>
+          <option>Bank Transfer</option>
+          <option>Original Payment Method</option>
+        </select>
+      </div>
+
+      <div class="ai-box">
+        <strong>Permission Check</strong>
+        <p>
+          This action will be checked against your assigned refund permissions.
+          Some refunds may require administrator/pharmacist approval.
+        </p>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-light" onclick="closeModal('refundModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitRefund()">Submit Return</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= PASSWORD MODAL ================= -->
+
+<div class="modal-overlay" id="passwordModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Change Password</h3>
+      <button class="close" onclick="closeModal('passwordModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Current Password</label>
+        <input type="password" class="input">
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" class="input" id="newPassword">
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" class="input" id="confirmPassword">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-light" onclick="closeModal('passwordModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= LOGOUT MODAL ================= -->
+
+<div class="modal-overlay" id="logoutModal">
+
+  <div class="modal">
+
+    <div class="modal-head">
+      <h3>Confirm Logout</h3>
+      <button class="close" onclick="closeModal('logoutModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <p style="font-size:13px;color:var(--muted);line-height:1.6">
+        Are you sure you want to log out of PharmaSense?
+      </p>
+
+      <div class="form-actions">
+        <button class="btn btn-light" onclick="closeModal('logoutModal')">
+          Cancel
+        </button>
+
+        <button class="btn btn-danger" onclick="confirmLogout()">
+          Logout
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+/* ================= SAMPLE DRUG DATABASE ================= */
+
+const drugs = [
+
+ {
+   brand:"Panadol",
+   name:"Paracetamol",
+   category:"Analgesic",
+   form:"Tablet",
+   strength:"500mg",
+   stock:120,
+   unit:"Tablets",
+   price:500,
+   batch:"PAN-26-001",
+   expiry:"2027-04-18",
+   manufacture:"2026-04-18",
+   barcode:"89010001",
+   nafdac:"A4-1234",
+   manufacturer:"GSK",
+   storage:"Store below 30°C",
+   prescription:"No"
+ },
+
+ {
+   brand:"Paracare",
+   name:"Paracetamol",
+   category:"Analgesic",
+   form:"Syrup",
+   strength:"120mg/5ml",
+   stock:35,
+   unit:"Bottles",
+   price:1200,
+   batch:"PAR-26-018",
+   expiry:"2027-01-20",
+   manufacture:"2026-01-20",
+   barcode:"89010002",
+   nafdac:"A4-5678",
+   manufacturer:"Emzor",
+   storage:"Store below 30°C",
+   prescription:"No"
+ },
+
+ {
+   brand:"Amoxil",
+   name:"Amoxicillin",
+   category:"Antibiotic",
+   form:"Capsule",
+   strength:"500mg",
+   stock:18,
+   unit:"Capsules",
+   price:3500,
+   batch:"AMX-26-004",
+   expiry:"2026-09-15",
+   manufacture:"2025-09-15",
+   barcode:"89010003",
+   nafdac:"B2-1001",
+   manufacturer:"GSK",
+   storage:"Dry place",
+   prescription:"Yes"
+ },
+
+ {
+   brand:"Vitamin C",
+   name:"Ascorbic Acid",
+   category:"Vitamin",
+   form:"Tablet",
+   strength:"1000mg",
+   stock:80,
+   unit:"Tablets",
+   price:2500,
+   batch:"VTC-26-009",
+   expiry:"2028-02-11",
+   manufacture:"2026-02-11",
+   barcode:"89010004",
+   nafdac:"C1-2233",
+   manufacturer:"Emzor",
+   storage:"Dry place",
+   prescription:"No"
+ },
+
+ {
+   brand:"Ventolin",
+   name:"Salbutamol",
+   category:"Respiratory",
+   form:"Inhaler",
+   strength:"100mcg",
+   stock:12,
+   unit:"Inhalers",
+   price:4500,
+   batch:"VEN-26-003",
+   expiry:"2027-05-08",
+   manufacture:"2026-05-08",
+   barcode:"89010005",
+   nafdac:"D3-4567",
+   manufacturer:"GSK",
+   storage:"Store below 25°C",
+   prescription:"Yes"
+ },
+
+ {
+   brand:"Coartem",
+   name:"Artemether/Lumefantrine",
+   category:"Antimalarial",
+   form:"Tablet",
+   strength:"20/120mg",
+   stock:0,
+   unit:"Tablets",
+   price:4200,
+   batch:"COA-26-001",
+   expiry:"2027-08-09",
+   manufacture:"2026-08-09",
+   barcode:"89010006",
+   nafdac:"E5-8899",
+   manufacturer:"Novartis",
+   storage:"Dry place",
+   prescription:"Yes"
+ }
+
+];
+
+let selectedDrug = null;
+
+/* ================= NAVIGATION ================= */
+
+function showPage(page){
+
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+
+  const target=document.getElementById(page);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+  document.querySelectorAll(".nav-item").forEach(item=>{
+    item.classList.remove("active");
+
+    if(item.dataset.page===page){
+      item.classList.add("active");
+    }
+  });
+
+  document.getElementById("sidebar").classList.remove("open");
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* Make top alert work without sidebar entry */
+document.querySelectorAll("[data-page]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    showPage(btn.dataset.page);
+  });
+});
+
+/* ================= GLOBAL SEARCH ================= */
+
+function globalDrugSearch(value){
+
+  const box=document.getElementById("searchResults");
+
+  value=value.trim().toLowerCase();
+
+  if(!value){
+    box.style.display="none";
+    return;
+  }
+
+  const results=drugs.filter(d=>
+    d.brand.toLowerCase().startsWith(value) ||
+    d.name.toLowerCase().startsWith(value) ||
+    d.barcode.includes(value) ||
+    d.category.toLowerCase().startsWith(value)
+  );
+
+  box.innerHTML="";
+
+  if(!results.length){
+
+    box.innerHTML=`
+      <div style="padding:15px;font-size:12px;color:#71848a">
+        No drug found.
+      </div>
+    `;
+
+  }else{
+
+    results.forEach(drug=>{
+
+      box.innerHTML+=`
+
+        <div class="search-result"
+             onclick="openDrugDetails('${drug.barcode}')">
+
+          <div>
+            <div class="result-name">${drug.brand}</div>
+            <div class="result-sub">
+              ${drug.name} · ${drug.form} · ${drug.strength}
+            </div>
+          </div>
+
+          <div class="result-price">
+            ₦${drug.price.toLocaleString()}
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  }
+
+  box.style.display="block";
+}
+
+/* ================= DRUG DETAILS ================= */
+
+function openDrugDetails(barcode){
+
+  const drug=drugs.find(d=>d.barcode===barcode);
+
+  if(!drug) return;
+
+  selectedDrug=drug;
+
+  document.getElementById("drugModalTitle").textContent =
+    drug.brand+" — Drug Details";
+
+  document.getElementById("drugDetails").innerHTML=`
+
+    <div class="detail">
+      <label>Medicine Name</label>
+      <strong>${drug.name}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Brand Name</label>
+      <strong>${drug.brand}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Category</label>
+      <strong>${drug.category}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Dosage Form</label>
+      <strong>${drug.form}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Strength</label>
+      <strong>${drug.strength}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Available Stock</label>
+      <strong>${drug.stock} ${drug.unit}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Selling Price</label>
+      <strong>₦${drug.price.toLocaleString()}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Batch Number</label>
+      <strong>${drug.batch}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Expiry Date</label>
+      <strong>${drug.expiry}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Manufacturing Date</label>
+      <strong>${drug.manufacture}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Barcode</label>
+      <strong>${drug.barcode}</strong>
+    </div>
+
+    <div class="detail">
+      <label>NAFDAC Registration</label>
+      <strong>${drug.nafdac}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Manufacturer</label>
+      <strong>${drug.manufacturer}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Storage</label>
+      <strong>${drug.storage}</strong>
+    </div>
+
+    <div class="detail">
+      <label>Prescription</label>
+      <strong>${drug.prescription}</strong>
+    </div>
+
+  `;
+
+  document.getElementById("drugModal").classList.add("show");
+
+  document.getElementById("searchResults").style.display="none";
+}
+
+/* ================= DRUG TABLE ================= */
+
+function renderDrugTable(list=drugs){
+
+  const tbody=document.getElementById("drugTable");
+
+  if(!tbody) return;
+
+  tbody.innerHTML="";
+
+  list.forEach(drug=>{
+
+    let status="Available";
+    let cls="success";
+
+    if(drug.stock===0){
+      status="Out of Stock";
+      cls="danger";
+    }else if(drug.stock<20){
+      status="Low Stock";
+      cls="warning";
+    }
+
+    tbody.innerHTML+=`
+
+      <tr onclick="openDrugDetails('${drug.barcode}')"
+          style="cursor:pointer">
+
+        <td><strong>${drug.brand}</strong></td>
+        <td>${drug.name}</td>
+        <td>${drug.form}</td>
+        <td>${drug.strength}</td>
+        <td>${drug.stock} ${drug.unit}</td>
+        <td>₦${drug.price.toLocaleString()}</td>
+        <td>
+          <span class="status ${cls}">
+            ${status}
+          </span>
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+  document.getElementById("resultCount").textContent=
+    list.length+" medicines";
+
+}
+
+renderDrugTable();
+
+/* ================= DRUG PAGE SEARCH ================= */
+
+function drugPageSearch(value){
+
+  value=value.toLowerCase().trim();
+
+  const results=drugs.filter(d=>
+    d.brand.toLowerCase().startsWith(value) ||
+    d.name.toLowerCase().startsWith(value) ||
+    d.barcode.includes(value)
+  );
+
+  renderDrugTable(results);
+}
+
+/* ================= POS SEARCH ================= */
+
+function posSearchDrug(value){
+
+  const box=document.getElementById("posResults");
+
+  value=value.toLowerCase().trim();
+
+  if(!value){
+    box.style.display="none";
+    return;
+  }
+
+  const results=drugs.filter(d=>
+    d.brand.toLowerCase().startsWith(value) ||
+    d.name.toLowerCase().startsWith(value)
+  );
+
+  box.innerHTML="";
+
+  results.forEach(drug=>{
+
+    box.innerHTML+=`
+
+      <div class="search-result"
+           onclick="selectPOSDrug('${drug.barcode}')">
+
+        <div>
+          <div class="result-name">${drug.brand}</div>
+          <div class="result-sub">
+            ${drug.name} · ${drug.form} · ${drug.strength}
+          </div>
+        </div>
+
+        <div class="result-price">
+          ₦${drug.price.toLocaleString()}
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  if(!results.length){
+    box.innerHTML=`
+      <div style="padding:15px;font-size:12px">
+        No drug found.
+      </div>
+    `;
+  }
+
+  box.style.display="block";
+}
+
+function selectPOSDrug(barcode){
+
+  const drug=drugs.find(d=>d.barcode===barcode);
+
+  if(!drug)return;
+
+  selectedDrug=drug;
+
+  document.getElementById("posSearch").value=drug.brand;
+
+  document.getElementById("posResults").style.display="none";
+
+  document.getElementById("selectedDrugArea").innerHTML=`
+
+    <div class="detail-grid">
+
+      <div class="detail">
+        <label>Selected Medicine</label>
+        <strong>${drug.name}</strong>
+      </div>
+
+      <div class="detail">
+        <label>Brand</label>
+        <strong>${drug.brand}</strong>
+      </div>
+
+      <div class="detail">
+        <label>Available Stock</label>
+        <strong>${drug.stock} ${drug.unit}</strong>
+      </div>
+
+      <div class="detail">
+        <label>Selling Price</label>
+        <strong>₦${drug.price.toLocaleString()}</strong>
+      </div>
+
+    </div>
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="addSelectedDrugToCart()"
+    >
+      + Add to Cart
+    </button>
+
+    <button
+      class="btn btn-light"
+      onclick="openDrugDetails('${drug.barcode}')"
+      style="margin-left:5px"
+    >
+      View Details / AI
+    </button>
+
+  `;
+
+}
+
+/* ================= CART ================= */
+
+let cartItems=3;
+
+function addToCart(name,price){
+
+  cartItems++;
+
+  document.getElementById("cartCount").textContent=cartItems;
+
+  document.getElementById("cartLabel").textContent=
+    cartItems+" items";
+
+  showToast(name+" added to cart.");
+
+}
+
+function addSelectedDrugToCart(){
+
+  if(!selectedDrug){
+    showToast("Please select a medicine first.");
+    return;
+  }
+
+  if(selectedDrug.stock<=0){
+
+    showToast("This medicine is out of stock.");
+    return;
+
+  }
+
+  addToCart(selectedDrug.brand,selectedDrug.price);
+
+  closeModal("drugModal");
+
+  showPage("pos");
+
+}
+
+function changeQty(amount){
+
+  showToast(
+    amount>0 ? "Quantity increased." : "Quantity decreased."
+  );
+
+}
+
+function clearCart(){
+
+  if(confirm("Clear all items from the current cart?")){
+
+    cartItems=0;
+
+    document.getElementById("cartCount").textContent=0;
+    document.getElementById("cartLabel").textContent="0 items";
+
+    showToast("Cart cleared.");
+
+  }
+
+}
+
+/* ================= CHECKOUT ================= */
+
+function checkout(){
+
+  document.getElementById("paymentModal").classList.add("show");
+
+}
+
+document.getElementById("amountReceived")
+.addEventListener("input",function(){
+
+  const amount=Number(this.value)||0;
+  const total=3500;
+
+  const change=Math.max(0,amount-total);
+
+  document.getElementById("changeAmount").textContent=
+    "₦"+change.toLocaleString();
+
+});
+
+function completeSale(){
+
+  const amount=Number(
+    document.getElementById("amountReceived").value
+  )||0;
+
+  if(amount<3500){
+
+    showToast("Amount received is insufficient.");
+
+    return;
+
+  }
+
+  closeModal("paymentModal");
+
+  showToast("Sale completed successfully. Receipt #PS-10429 created.");
+
+}
+
+/* ================= SCANNER ================= */
+
+function openScanner(){
+
+  document.getElementById("scannerModal").classList.add("show");
+
+}
+
+function simulateScan(){
+
+  closeModal("scannerModal");
+
+  const drug=drugs[0];
+
+  document.getElementById("globalSearch").value=drug.brand;
+
+  openDrugDetails(drug.barcode);
+
+  showToast("Barcode scanned successfully.");
+
+}
+
+/* ================= CUSTOMER ================= */
+
+function openCustomerModal(){
+
+  document.getElementById("customerModal").classList.add("show");
+
+}
+
+function saveCustomer(){
+
+  const name=document.getElementById("customerName").value.trim();
+  const phone=document.getElementById("customerPhone").value.trim();
+
+  if(!name){
+
+    showToast("Customer name is required.");
+    return;
+
+  }
+
+  if(!phone){
+
+    showToast("Phone number is required.");
+    return;
+
+  }
+
+  closeModal("customerModal");
+
+  showToast("Customer added successfully.");
+
+}
+
+function filterCustomers(value){
+
+  const rows=document.querySelectorAll("#customerTable tr");
+
+  value=value.toLowerCase();
+
+  rows.forEach(row=>{
+
+    row.style.display=
+      row.textContent.toLowerCase().includes(value)
+      ? ""
+      : "none";
+
+  });
+
+}
+
+/* ================= REFUND ================= */
+
+function openRefundModal(){
+
+  document.getElementById("refundModal").classList.add("show");
+
+}
+
+function submitRefund(){
+
+  closeModal("refundModal");
+
+  showToast(
+    "Return submitted. Permission/approval rules will be checked."
+  );
+
+}
+
+/* ================= ATTENDANCE ================= */
+
+function clockIn(){
+
+  document.getElementById("attendanceStatus").textContent="Present";
+
+  showToast("Attendance clock-in recorded.");
+
+}
+
+/* ================= PASSWORD ================= */
+
+function openPasswordModal(){
+
+  document.getElementById("passwordModal").classList.add("show");
+
+}
+
+function changePassword(){
+
+  const p=document.getElementById("newPassword").value;
+  const c=document.getElementById("confirmPassword").value;
+
+  if(!p || p.length<8){
+
+    showToast("Password must contain at least 8 characters.");
+    return;
+
+  }
+
+  if(p!==c){
+
+    showToast("Passwords do not match.");
+    return;
+
+  }
+
+  closeModal("passwordModal");
+
+  showToast("Password changed successfully.");
+
+}
+
+/* ================= LOGOUT ================= */
+
+function logout(){
+
+  document.getElementById("logoutModal").classList.add("show");
+
+}
+
+function confirmLogout(){
+
+  closeModal("logoutModal");
+
+  showToast("Session ended. Returning to login...");
+
+  setTimeout(()=>{
+
+    /*
+      Production implementation:
+      invalidate backend session/token,
+      clear authentication storage,
+      redirect to Login Page.
+    */
+
+    document.body.innerHTML=`
+
+      <div style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#f4f7f8;
+        font-family:Arial;
+      ">
+
+        <div style="
+          background:white;
+          padding:40px;
+          border-radius:15px;
+          text-align:center;
+          box-shadow:0 10px 40px rgba(0,0,0,.08);
+        ">
+
+          <div style="
+            width:55px;
+            height:55px;
+            border-radius:14px;
+            margin:auto;
+            background:#087f8c;
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:25px;
+            font-weight:bold;
+          ">
+            P
+          </div>
+
+          <h2 style="margin-top:15px">
+            PharmaSense
+          </h2>
+
+          <p style="
+            margin-top:8px;
+            color:#71848a;
+            font-size:13px;
+          ">
+            You have been securely logged out.
+          </p>
+
+          <button
+            onclick="location.reload()"
+            style="
+              margin-top:20px;
+              padding:11px 18px;
+              border:0;
+              border-radius:8px;
+              background:#087f8c;
+              color:white;
+              font-weight:bold;
+            "
+          >
+            Login Again
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  },700);
+
+}
+
+/* ================= MODALS ================= */
+
+function closeModal(id){
+
+  document.getElementById(id).classList.remove("show");
+
+}
+
+/* Close modal when clicking outside */
+
+document.querySelectorAll(".modal-overlay")
+.forEach(overlay=>{
+
+  overlay.addEventListener("click",function(e){
+
+    if(e.target===overlay){
+      overlay.classList.remove("show");
+    }
+
+  });
+
+});
+
+/* ================= TOAST ================= */
+
+let toastTimer;
+
+function showToast(message){
+
+  const toast=document.getElementById("toast");
+
+  toast.textContent=message;
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    toast.classList.remove("show");
+  },2800);
+
+}
+
+/* ================= MOBILE SIDEBAR ================= */
+
+function toggleSidebar(){
+
+  document.getElementById("sidebar")
+  .classList.toggle("open");
+
+}
+
+/* ================= CLICK OUTSIDE SEARCH ================= */
+
+document.addEventListener("click",function(e){
+
+  if(!e.target.closest(".search-wrap")){
+
+    document.querySelectorAll(".search-results")
+    .forEach(x=>x.style.display="none");
+
+  }
+
+});
+
+/* ================= CLOCK ================= */
+
+setInterval(()=>{
+
+  const now=new Date();
+
+  // Reserved for header live date/time display.
+
+},1000);
+
+</script>
+
+</body>
+</html>

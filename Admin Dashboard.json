@@ -1,0 +1,7169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PharmaSense — Admin Dashboard</title>
+
+<style>
+:root{
+    --primary:#119b8d;
+    --primary-dark:#08786e;
+    --primary-light:#e8f7f4;
+
+    --blue:#2878c8;
+    --blue-light:#edf5ff;
+
+    --warning:#d59624;
+    --warning-light:#fff7e7;
+
+    --danger:#d8545d;
+    --danger-light:#fff0f1;
+
+    --success:#168b66;
+    --success-light:#eaf8f2;
+
+    --purple:#7956b7;
+    --purple-light:#f3effc;
+
+    --bg:#f5f8f8;
+    --white:#ffffff;
+    --text:#183a3e;
+    --muted:#819396;
+    --border:#e3eded;
+
+    --shadow:0 5px 24px rgba(20,60,65,.06);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+button,
+input,
+select,
+textarea{
+    font-family:inherit;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:255px;
+    height:100vh;
+    background:#fff;
+    border-right:1px solid var(--border);
+    padding:16px 12px;
+    overflow-y:auto;
+    z-index:1000;
+    transition:.3s;
+}
+
+.logo-area{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:5px 9px 19px;
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    width:42px;
+    height:42px;
+    background:var(--primary);
+    color:white;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:800;
+}
+
+.logo-area h2{
+    font-size:19px;
+}
+
+.logo-area h2 span{
+    color:var(--primary);
+}
+
+.logo-area small{
+    display:block;
+    font-size:7px;
+    color:var(--muted);
+    margin-top:3px;
+    letter-spacing:.4px;
+}
+
+.section-title{
+    font-size:8px;
+    font-weight:800;
+    letter-spacing:1.1px;
+    color:#a1abad;
+    margin:19px 10px 7px;
+}
+
+.nav-btn{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#60777a;
+    padding:10px 11px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    font-size:10px;
+    margin-bottom:2px;
+}
+
+.nav-btn:hover,
+.nav-btn.active{
+    background:var(--primary-light);
+    color:var(--primary);
+}
+
+.nav-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.icon{
+    width:20px;
+    text-align:center;
+    font-size:14px;
+}
+
+.arrow{
+    font-size:8px;
+    transition:.2s;
+}
+
+.nav-btn.open .arrow{
+    transform:rotate(180deg);
+}
+
+.submenu{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:.3s;
+}
+
+.submenu.open{
+    max-height:500px;
+    opacity:1;
+}
+
+.submenu button{
+    width:100%;
+    border:0;
+    background:none;
+    text-align:left;
+    color:#809193;
+    padding:8px 10px 8px 42px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:9px;
+}
+
+.submenu button:hover,
+.submenu button.active{
+    color:var(--primary);
+    background:#f5fbfa;
+}
+
+.admin-profile{
+    background:#f3faf8;
+    border-radius:11px;
+    padding:11px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-top:18px;
+}
+
+.avatar{
+    width:35px;
+    height:35px;
+    background:#d8efeb;
+    color:var(--primary);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.admin-profile strong{
+    display:block;
+    font-size:9px;
+}
+
+.admin-profile small{
+    font-size:7px;
+    color:var(--muted);
+}
+
+.logout{
+    border:0;
+    background:none;
+    width:100%;
+    text-align:left;
+    color:var(--danger);
+    padding:10px;
+    margin-top:5px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:10px;
+}
+
+.logout:hover{
+    background:var(--danger-light);
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    margin-left:255px;
+    min-height:100vh;
+}
+
+.topbar{
+    height:72px;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    position:sticky;
+    top:0;
+    z-index:500;
+}
+
+.mobile-menu{
+    display:none;
+    border:0;
+    background:var(--primary-light);
+    color:var(--primary);
+    width:38px;
+    height:38px;
+    border-radius:8px;
+    font-size:18px;
+}
+
+.page-heading h1{
+    font-size:19px;
+}
+
+.page-heading p{
+    color:var(--muted);
+    font-size:8px;
+    margin-top:3px;
+}
+
+
+/* GLOBAL SEARCH */
+
+.global-search{
+    position:relative;
+    width:300px;
+}
+
+.global-search input{
+    width:100%;
+    padding:10px 13px 10px 35px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    outline:none;
+    font-size:9px;
+    background:#fafcfc;
+}
+
+.global-search input:focus{
+    border-color:var(--primary);
+    background:white;
+}
+
+.search-icon{
+    position:absolute;
+    left:12px;
+    top:10px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.search-results{
+    position:absolute;
+    top:45px;
+    left:0;
+    width:100%;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    display:none;
+    max-height:360px;
+    overflow:auto;
+    z-index:1000;
+}
+
+.search-results.show{
+    display:block;
+}
+
+.search-result{
+    padding:11px 12px;
+    border-bottom:1px solid #f0f3f3;
+    cursor:pointer;
+}
+
+.search-result:hover{
+    background:var(--primary-light);
+}
+
+.search-result strong{
+    font-size:10px;
+}
+
+.search-result small{
+    display:block;
+    color:var(--muted);
+    font-size:7px;
+    margin-top:3px;
+}
+
+.brand-letter{
+    color:var(--primary);
+    font-weight:bold;
+}
+
+
+/* TOP ACTIONS */
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.notification{
+    width:36px;
+    height:36px;
+    border-radius:9px;
+    background:#f4faf9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    cursor:pointer;
+}
+
+.notification-dot{
+    position:absolute;
+    right:6px;
+    top:5px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--danger);
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.content{
+    padding:24px 25px 45px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.welcome{
+    background:linear-gradient(115deg,#119b8d,#08786e);
+    color:white;
+    border-radius:16px;
+    padding:22px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:17px;
+}
+
+.welcome h2{
+    font-size:20px;
+}
+
+.welcome p{
+    font-size:9px;
+    opacity:.9;
+    margin-top:5px;
+}
+
+.welcome-icon{
+    font-size:48px;
+    opacity:.25;
+}
+
+
+/* =========================
+   STAT CARDS
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+}
+
+.stat-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:15px;
+    box-shadow:var(--shadow);
+}
+
+.stat-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.stat-title{
+    font-size:8px;
+    color:var(--muted);
+}
+
+.stat-value{
+    font-size:21px;
+    font-weight:800;
+    margin-top:6px;
+}
+
+.stat-note{
+    font-size:7px;
+    margin-top:5px;
+    color:var(--success);
+}
+
+.stat-icon{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    background:var(--primary-light);
+    color:var(--primary);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+/* =========================
+   STOCK CARDS
+========================= */
+
+.stock-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+    margin-top:15px;
+}
+
+.stock-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+}
+
+.stock-card h3{
+    font-size:10px;
+    color:#63787b;
+}
+
+.stock-value{
+    font-size:25px;
+    font-weight:800;
+    margin-top:6px;
+}
+
+.stock-card p{
+    font-size:7px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.stock-total .stock-value{
+    color:var(--primary);
+}
+
+.stock-low .stock-value{
+    color:var(--warning);
+}
+
+.stock-out .stock-value{
+    color:var(--danger);
+}
+
+.stock-expired .stock-value{
+    color:#8e5056;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:17px;
+    margin-top:15px;
+}
+
+.progress-head{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:9px;
+}
+
+.progress-head strong{
+    font-size:11px;
+}
+
+.progress-head span{
+    color:var(--primary);
+    font-size:11px;
+    font-weight:bold;
+}
+
+.progress-bar{
+    width:100%;
+    height:8px;
+    border-radius:20px;
+    background:#e8eeee;
+    overflow:hidden;
+}
+
+.progress-fill{
+    width:85%;
+    height:100%;
+    background:var(--primary);
+    border-radius:20px;
+}
+
+
+/* =========================
+   DASHBOARD GRID
+========================= */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:15px;
+    margin-top:15px;
+}
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:17px;
+    box-shadow:var(--shadow);
+}
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+}
+
+.card-header h3{
+    font-size:12px;
+}
+
+.card-header button{
+    border:0;
+    background:none;
+    color:var(--primary);
+    cursor:pointer;
+    font-size:8px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    color:#879799;
+    font-size:7px;
+    text-align:left;
+    padding:9px;
+    border-bottom:1px solid var(--border);
+}
+
+td{
+    font-size:8px;
+    padding:10px 9px;
+    border-bottom:1px solid #f1f4f4;
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 7px;
+    border-radius:20px;
+    font-size:6px;
+}
+
+.badge-success{
+    background:var(--success-light);
+    color:var(--success);
+}
+
+.badge-warning{
+    background:var(--warning-light);
+    color:var(--warning);
+}
+
+.badge-danger{
+    background:var(--danger-light);
+    color:var(--danger);
+}
+
+.badge-blue{
+    background:var(--blue-light);
+    color:var(--blue);
+}
+
+.badge-purple{
+    background:var(--purple-light);
+    color:var(--purple);
+}
+
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.quick-action{
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:13px 7px;
+    text-align:center;
+    cursor:pointer;
+    font-size:8px;
+    color:#63787b;
+}
+
+.quick-action:hover{
+    color:var(--primary);
+    border-color:var(--primary);
+    background:#f6fcfb;
+}
+
+.quick-action div{
+    font-size:19px;
+    margin-bottom:5px;
+}
+
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.inner-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:17px;
+}
+
+.inner-header h2{
+    font-size:19px;
+}
+
+.inner-header p{
+    font-size:8px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.primary-btn{
+    border:0;
+    background:var(--primary);
+    color:white;
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:9px;
+    cursor:pointer;
+}
+
+.primary-btn:hover{
+    background:var(--primary-dark);
+}
+
+.secondary-btn{
+    border:1px solid var(--border);
+    background:white;
+    color:#607679;
+    padding:9px 13px;
+    border-radius:8px;
+    font-size:9px;
+    cursor:pointer;
+}
+
+
+/* =========================
+   FILTER BAR
+========================= */
+
+.filter-bar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:13px;
+}
+
+.filter-bar input,
+.filter-bar select{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    font-size:8px;
+    outline:none;
+    background:white;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:19px;
+}
+
+.form-section{
+    margin-bottom:22px;
+}
+
+.form-section-title{
+    font-size:12px;
+    color:var(--text);
+    padding-bottom:9px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.form-group label{
+    display:block;
+    font-size:8px;
+    color:#6d8083;
+    margin-bottom:5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    outline:none;
+    font-size:9px;
+    background:white;
+}
+
+.form-group textarea{
+    min-height:85px;
+    resize:vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:var(--primary);
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.required{
+    color:var(--danger);
+}
+
+
+/* =========================
+   PACKAGING
+========================= */
+
+.packaging-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.packaging-table th,
+.packaging-table td{
+    border:1px solid var(--border);
+}
+
+.packaging-table input,
+.packaging-table select{
+    width:100%;
+    padding:8px;
+    border:0;
+    outline:none;
+    font-size:8px;
+}
+
+.packaging-help{
+    font-size:7px;
+    color:var(--muted);
+    margin-top:7px;
+}
+
+
+/* =========================
+   DRUG DETAILS
+========================= */
+
+.drug-hero{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:19px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:14px;
+}
+
+.drug-title{
+    display:flex;
+    gap:13px;
+    align-items:center;
+}
+
+.drug-icon{
+    width:55px;
+    height:55px;
+    border-radius:12px;
+    background:var(--primary-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+}
+
+.drug-title h2{
+    font-size:17px;
+}
+
+.drug-title p{
+    font-size:8px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.drug-actions{
+    display:flex;
+    gap:7px;
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:14px;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.info-box{
+    padding:11px;
+    background:#f8fbfb;
+    border-radius:8px;
+}
+
+.info-box small{
+    display:block;
+    color:var(--muted);
+    font-size:7px;
+}
+
+.info-box strong{
+    display:block;
+    font-size:10px;
+    margin-top:4px;
+}
+
+
+/* =========================
+   AI ASSISTANT
+========================= */
+
+.ai-card{
+    background:linear-gradient(145deg,#f3effc,#fbfaff);
+    border:1px solid #ddd3f1;
+    border-radius:13px;
+    padding:17px;
+}
+
+.ai-header{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:12px;
+}
+
+.ai-icon{
+    width:36px;
+    height:36px;
+    background:var(--purple);
+    color:white;
+    border-radius:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.ai-header h3{
+    font-size:12px;
+}
+
+.ai-header p{
+    font-size:7px;
+    color:#8878a4;
+    margin-top:3px;
+}
+
+.ai-warning{
+    background:white;
+    border-left:3px solid var(--warning);
+    padding:11px;
+    border-radius:7px;
+    margin-bottom:8px;
+}
+
+.ai-warning strong{
+    font-size:9px;
+}
+
+.ai-warning p{
+    font-size:7px;
+    color:#7a888b;
+    line-height:1.5;
+    margin-top:4px;
+}
+
+.ai-suggestion{
+    background:white;
+    padding:10px;
+    border-radius:7px;
+    margin-top:8px;
+}
+
+.ai-suggestion strong{
+    font-size:8px;
+}
+
+.ai-suggestion p{
+    font-size:7px;
+    color:#758487;
+    line-height:1.5;
+    margin-top:4px;
+}
+
+.ai-note{
+    font-size:6px;
+    color:#8878a4;
+    margin-top:12px;
+    line-height:1.5;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(14,37,40,.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:3000;
+    padding:15px;
+}
+
+.modal-overlay.show{
+    display:flex;
+}
+
+.modal{
+    width:100%;
+    max-width:520px;
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+
+.modal h3{
+    font-size:14px;
+}
+
+.modal p{
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.5;
+    margin-top:7px;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:17px;
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    background:#17383d;
+    color:white;
+    padding:12px 16px;
+    border-radius:9px;
+    font-size:9px;
+    transform:translateY(100px);
+    opacity:0;
+    transition:.3s;
+    z-index:5000;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1150px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stock-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .form-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:900px){
+
+    .dashboard-grid,
+    .detail-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:750px){
+
+    .sidebar{
+        transform:translateX(-100%);
+    }
+
+    .sidebar.show{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .topbar{
+        padding:0 14px;
+    }
+
+    .global-search{
+        width:200px;
+    }
+
+    .content{
+        padding:17px 13px;
+    }
+
+    .info-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:550px){
+
+    .global-search{
+        display:none;
+    }
+
+    .stats,
+    .stock-grid,
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .welcome-icon{
+        display:none;
+    }
+
+    .drug-hero{
+        flex-direction:column;
+        gap:12px;
+    }
+
+    .inner-header{
+        align-items:flex-start;
+        gap:10px;
+        flex-direction:column;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo-area">
+
+        <div class="logo">+</div>
+
+        <div>
+            <h2>Pharma<span>Sense</span></h2>
+            <small>PHARMACY MANAGEMENT SYSTEM</small>
+        </div>
+
+    </div>
+
+
+    <div class="section-title">MAIN</div>
+
+
+    <button class="nav-btn active" data-page="dashboard">
+        <span class="nav-left">
+            <span class="icon">📊</span>
+            Dashboard
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="pos">
+        <span class="nav-left">
+            <span class="icon">💳</span>
+            POS / Billing
+        </span>
+    </button>
+
+
+    <div class="section-title">PHARMACY OPERATIONS</div>
+
+
+    <!-- DRUGS -->
+
+    <button class="nav-btn dropdown">
+        <span class="nav-left">
+            <span class="icon">💊</span>
+            Drugs
+        </span>
+        <span class="arrow">▼</span>
+    </button>
+
+    <div class="submenu">
+
+        <button data-page="drugs">All Drugs</button>
+
+        <button data-page="add-drug">+ Add Medicine</button>
+
+        <button data-page="drug-search">Drug Search</button>
+
+        <button data-page="barcode">Barcode Scanner</button>
+
+    </div>
+
+
+    <!-- INVENTORY -->
+
+    <button class="nav-btn dropdown">
+        <span class="nav-left">
+            <span class="icon">📦</span>
+            Inventory
+        </span>
+        <span class="arrow">▼</span>
+    </button>
+
+    <div class="submenu">
+
+        <button data-page="inventory">All Stock</button>
+
+        <button data-page="stock-in">Stock In</button>
+
+        <button data-page="stock-adjustment">Stock Adjustment</button>
+
+        <button data-page="stock-movement">Stock Movement</button>
+
+        <button data-page="batches">Batches</button>
+
+        <button data-page="low-stock">Low Stock</button>
+
+        <button data-page="out-stock">Out of Stock</button>
+
+        <button data-page="expiry">Expiring / Expired</button>
+
+    </div>
+
+
+    <button class="nav-btn" data-page="prescriptions">
+        <span class="nav-left">
+            <span class="icon">📋</span>
+            Prescriptions
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="customers">
+        <span class="nav-left">
+            <span class="icon">👥</span>
+            Customers
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="suppliers">
+        <span class="nav-left">
+            <span class="icon">🏢</span>
+            Suppliers
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="returns">
+        <span class="nav-left">
+            <span class="icon">↩️</span>
+            Returns & Refunds
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="alerts">
+        <span class="nav-left">
+            <span class="icon">🔔</span>
+            Alerts
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="ai">
+        <span class="nav-left">
+            <span class="icon">🤖</span>
+            AI Safety Assistant
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="reports">
+        <span class="nav-left">
+            <span class="icon">📈</span>
+            Reports
+        </span>
+    </button>
+
+
+    <div class="section-title">ADMINISTRATION</div>
+
+
+    <button class="nav-btn dropdown">
+
+        <span class="nav-left">
+            <span class="icon">👨‍💼</span>
+            Employees
+        </span>
+
+        <span class="arrow">▼</span>
+
+    </button>
+
+    <div class="submenu">
+
+        <button data-page="employees">
+            Employees
+        </button>
+
+        <button data-page="add-employee">
+            Add Employee
+        </button>
+
+        <button data-page="attendance">
+            Attendance
+        </button>
+
+        <button data-page="employee-reports">
+            Employee Reports
+        </button>
+
+    </div>
+
+
+    <button class="nav-btn" data-page="audit">
+        <span class="nav-left">
+            <span class="icon">📝</span>
+            Audit Log
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="backup">
+        <span class="nav-left">
+            <span class="icon">💾</span>
+            Backup & Restore
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="settings">
+        <span class="nav-left">
+            <span class="icon">⚙️</span>
+            Settings
+        </span>
+    </button>
+
+
+    <div class="section-title">ACCOUNT</div>
+
+
+    <button class="nav-btn" data-page="profile">
+        <span class="nav-left">
+            <span class="icon">👤</span>
+            My Profile
+        </span>
+    </button>
+
+
+    <button class="nav-btn" data-page="help">
+        <span class="nav-left">
+            <span class="icon">❓</span>
+            Help
+        </span>
+    </button>
+
+
+    <div class="admin-profile">
+
+        <div class="avatar">AD</div>
+
+        <div>
+            <strong>Admin User</strong>
+            <small>Administrator</small>
+        </div>
+
+    </div>
+
+
+    <button class="logout" onclick="confirmLogout()">
+        🚪 &nbsp; Logout
+    </button>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+<header class="topbar">
+
+    <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </button>
+
+
+    <div class="page-heading">
+
+        <h1 id="pageTitle">
+            Admin Dashboard
+        </h1>
+
+        <p id="pageSubtitle">
+            Complete pharmacy operational overview
+        </p>
+
+    </div>
+
+
+    <!-- TOP GLOBAL DRUG SEARCH -->
+
+    <div class="global-search">
+
+        <span class="search-icon">🔍</span>
+
+        <input
+            id="globalSearch"
+            type="search"
+            placeholder="Search drug by brand name, generic name, code or barcode..."
+            autocomplete="off"
+        >
+
+        <div
+            class="search-results"
+            id="globalResults"
+        ></div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <div
+            class="notification"
+            onclick="openPage('alerts')"
+        >
+            🔔
+            <span class="notification-dot"></span>
+        </div>
+
+    </div>
+
+</header>
+
+
+<section class="content">
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<div
+    class="page active"
+    id="dashboard"
+>
+
+
+<div class="welcome">
+
+    <div>
+
+        <h2>
+            Good morning, Admin 👋
+        </h2>
+
+        <p>
+            Here's the complete operational status of your pharmacy.
+        </p>
+
+    </div>
+
+    <div class="welcome-icon">
+        💊
+    </div>
+
+</div>
+
+
+<!-- STATISTICS -->
+
+<div class="stats">
+
+    <div class="stat-card">
+
+        <div class="stat-header">
+
+            <div>
+
+                <div class="stat-title">
+                    TODAY'S SALES
+                </div>
+
+                <div class="stat-value">
+                    ₦286,400
+                </div>
+
+                <div class="stat-note">
+                    ↑ 12.5% compared with yesterday
+                </div>
+
+            </div>
+
+            <div class="stat-icon">
+                ₦
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-header">
+
+            <div>
+
+                <div class="stat-title">
+                    MONTHLY SALES
+                </div>
+
+                <div class="stat-value">
+                    ₦5.82M
+                </div>
+
+                <div class="stat-note">
+                    August 2026
+                </div>
+
+            </div>
+
+            <div class="stat-icon">
+                📈
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-header">
+
+            <div>
+
+                <div class="stat-title">
+                    PRESCRIPTIONS
+                </div>
+
+                <div class="stat-value">
+                    342
+                </div>
+
+                <div class="stat-note">
+                    318 dispensed
+                </div>
+
+            </div>
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-header">
+
+            <div>
+
+                <div class="stat-title">
+                    STAFF LOGGED IN
+                </div>
+
+                <div class="stat-value">
+                    7
+                </div>
+
+                <div class="stat-note">
+                    10 registered employees
+                </div>
+
+            </div>
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- STOCK -->
+
+<div class="stock-grid">
+
+    <div class="stock-card stock-total">
+
+        <h3>Total Stock</h3>
+
+        <div class="stock-value">
+            1,248
+        </div>
+
+        <p>
+            Available medicine units
+        </p>
+
+    </div>
+
+
+    <div class="stock-card stock-low">
+
+        <h3>Low Stock</h3>
+
+        <div class="stock-value">
+            17
+        </div>
+
+        <p>
+            Need replenishment
+        </p>
+
+    </div>
+
+
+    <div class="stock-card stock-out">
+
+        <h3>Out of Stock</h3>
+
+        <div class="stock-value">
+            18
+        </div>
+
+        <p>
+            Medicine types unavailable
+        </p>
+
+    </div>
+
+
+    <div class="stock-card stock-expired">
+
+        <h3>Expired</h3>
+
+        <div class="stock-value">
+            7
+        </div>
+
+        <p>
+            Must not be dispensed
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- DRUG STOCK PROGRESS -->
+
+<div class="progress-card">
+
+    <div class="progress-head">
+
+        <strong>
+            Current Drug Availability Rate
+        </strong>
+
+        <span>
+            85%
+        </span>
+
+    </div>
+
+    <div class="progress-bar">
+
+        <div class="progress-fill"></div>
+
+    </div>
+
+    <p style="
+        font-size:7px;
+        color:#819396;
+        margin-top:7px;
+    ">
+        85% of tracked drug items currently have available stock.
+    </p>
+
+</div>
+
+
+<!-- LOWER DASHBOARD -->
+
+<div class="dashboard-grid">
+
+
+<!-- RECENT TRANSACTIONS -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>
+            Recent Transactions
+        </h3>
+
+        <button onclick="openPage('pos')">
+            View POS
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Invoice</th>
+                    <th>Drug</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                    <th>Staff</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>INV-1058</td>
+                    <td>Paracetamol 500mg</td>
+                    <td>10</td>
+                    <td>₦5,000</td>
+                    <td>John</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Completed
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>INV-1057</td>
+                    <td>Amoxicillin 500mg</td>
+                    <td>5</td>
+                    <td>₦7,500</td>
+                    <td>Mary</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Completed
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>INV-1056</td>
+                    <td>Artemether 40mg</td>
+                    <td>3</td>
+                    <td>₦6,600</td>
+                    <td>John</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Completed
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>INV-1055</td>
+                    <td>Ceftriaxone 1g</td>
+                    <td>2</td>
+                    <td>₦7,000</td>
+                    <td>Mary</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Pending
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- QUICK ACTIONS -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>
+            Quick Actions
+        </h3>
+
+    </div>
+
+
+    <div class="quick-grid">
+
+        <div
+            class="quick-action"
+            onclick="openPage('add-drug')"
+        >
+            <div>💊</div>
+            Add Medicine
+        </div>
+
+
+        <div
+            class="quick-action"
+            onclick="openPage('pos')"
+        >
+            <div>💳</div>
+            New Sale
+        </div>
+
+
+        <div
+            class="quick-action"
+            onclick="openPage('stock-in')"
+        >
+            <div>📦</div>
+            Stock In
+        </div>
+
+
+        <div
+            class="quick-action"
+            onclick="openPage('returns')"
+        >
+            <div>↩️</div>
+            Refund
+        </div>
+
+
+        <div
+            class="quick-action"
+            onclick="openPage('reports')"
+        >
+            <div>📈</div>
+            Reports
+        </div>
+
+
+        <div
+            class="quick-action"
+            onclick="openPage('ai')"
+        >
+            <div>🤖</div>
+            AI Safety
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- LOGIN / LOGOUT ACTIVITY -->
+
+<div class="card" style="margin-top:15px;">
+
+    <div class="card-header">
+
+        <h3>
+            Recent Login & Logout Records
+        </h3>
+
+        <button onclick="openPage('audit')">
+            View Audit Log
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date / Time</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Activity</th>
+                    <th>Device</th>
+                    <th>Result</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>28 Aug 2026, 10:05</td>
+                    <td>Admin User</td>
+                    <td>Admin</td>
+                    <td>Login</td>
+                    <td>Chrome / Windows</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Successful
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>28 Aug 2026, 09:51</td>
+                    <td>John Pharmacist</td>
+                    <td>Pharmacist</td>
+                    <td>Login</td>
+                    <td>Chrome / Windows</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Successful
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>28 Aug 2026, 09:43</td>
+                    <td>Mary Cashier</td>
+                    <td>Cashier</td>
+                    <td>Logout</td>
+                    <td>Chrome / Windows</td>
+                    <td>
+                        <span class="badge badge-blue">
+                            Recorded
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>28 Aug 2026, 08:57</td>
+                    <td>David Staff</td>
+                    <td>Cashier</td>
+                    <td>Failed Login</td>
+                    <td>Android</td>
+                    <td>
+                        <span class="badge badge-danger">
+                            Failed
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     ALL DRUGS
+===================================================== -->
+
+<div class="page" id="drugs">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>All Drugs</h2>
+            <p>Complete medicine database.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="openPage('add-drug')"
+        >
+            + Add Medicine
+        </button>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+        <input
+            placeholder="Search medicine..."
+            oninput="filterDrugTable(this.value)"
+        >
+
+        <select>
+            <option>All Categories</option>
+            <option>Antibiotics</option>
+            <option>Vitamins</option>
+            <option>Analgesics</option>
+            <option>Antimalarials</option>
+            <option>Antihistamines</option>
+            <option>Antacids</option>
+            <option>Antifungals</option>
+            <option>Others</option>
+        </select>
+
+        <select>
+            <option>All Status</option>
+            <option>In Stock</option>
+            <option>Low Stock</option>
+            <option>Out of Stock</option>
+            <option>Expiring</option>
+            <option>Expired</option>
+        </select>
+
+        <button class="secondary-btn">
+            Clear Filters
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="table-wrapper">
+
+            <table id="drugTable">
+
+                <thead>
+
+                    <tr>
+                        <th>Drug</th>
+                        <th>Brand</th>
+                        <th>Form</th>
+                        <th>Category</th>
+                        <th>Batch</th>
+                        <th>Qty</th>
+                        <th>Expiry</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Paracetamol 500mg</td>
+                        <td>Panadol</td>
+                        <td>Tablet</td>
+                        <td>Analgesic</td>
+                        <td>PCM-2401</td>
+                        <td>120</td>
+                        <td>20 Apr 2027</td>
+                        <td>
+                            <span class="badge badge-success">
+                                In Stock
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="secondary-btn"
+                                onclick="openPage('drug-details')"
+                            >
+                                View
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Amoxicillin 500mg</td>
+                        <td>Amoxil</td>
+                        <td>Capsule</td>
+                        <td>Antibiotic</td>
+                        <td>AMX-1202</td>
+                        <td>45</td>
+                        <td>15 Feb 2027</td>
+                        <td>
+                            <span class="badge badge-success">
+                                In Stock
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="secondary-btn"
+                                onclick="openPage('drug-details')"
+                            >
+                                View
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Artemether 40mg</td>
+                        <td>Lonart</td>
+                        <td>Tablet</td>
+                        <td>Antimalarial</td>
+                        <td>ART-2204</td>
+                        <td>12</td>
+                        <td>10 Dec 2026</td>
+                        <td>
+                            <span class="badge badge-warning">
+                                Low Stock
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="secondary-btn"
+                                onclick="openPage('drug-details')"
+                            >
+                                View
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Ceftriaxone 1g</td>
+                        <td>Rocephin</td>
+                        <td>Vial</td>
+                        <td>Antibiotic</td>
+                        <td>CEF-3021</td>
+                        <td>25</td>
+                        <td>15 Sep 2026</td>
+                        <td>
+                            <span class="badge badge-warning">
+                                Expiring
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="secondary-btn"
+                                onclick="openPage('drug-details')"
+                            >
+                                View
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADD MEDICINE
+===================================================== -->
+
+<div class="page" id="add-drug">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Add Medicine</h2>
+            <p>
+                Create a complete medicine record with batch, packaging and pricing information.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        class="form-card"
+        id="addDrugForm"
+    >
+
+
+    <!-- BASIC INFORMATION -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            1. Basic Medicine Information
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Medicine Name <span class="required">*</span>
+                </label>
+
+                <input
+                    name="medicineName"
+                    placeholder="e.g. Paracetamol"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Brand Name <span class="required">*</span>
+                </label>
+
+                <input
+                    name="brandName"
+                    placeholder="e.g. Panadol"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Drug Code
+                </label>
+
+                <input
+                    placeholder="e.g. PCM-500"
+                >
+
+            </div>
+
+
+            <!-- DOSAGE FORM -->
+
+            <div class="form-group">
+
+                <label>
+                    Dosage / Medicine Form <span class="required">*</span>
+                </label>
+
+                <select
+                    id="dosageForm"
+                    required
+                    onchange="updateCategoryOptions()"
+                >
+
+                    <option value="">
+                        Select form
+                    </option>
+
+                    <option value="tablet">
+                        Tablet
+                    </option>
+
+                    <option value="capsule">
+                        Capsule
+                    </option>
+
+                    <option value="liquid">
+                        Liquid / Syrup
+                    </option>
+
+                    <option value="inhaler">
+                        Inhaler
+                    </option>
+
+                    <option value="injection">
+                        Injection
+                    </option>
+
+                    <option value="cream">
+                        Cream
+                    </option>
+
+                    <option value="ointment">
+                        Ointment
+                    </option>
+
+                    <option value="gel">
+                        Gel
+                    </option>
+
+                    <option value="drops">
+                        Drops
+                    </option>
+
+                    <option value="sachet">
+                        Sachet / Powder
+                    </option>
+
+                    <option value="suppository">
+                        Suppository
+                    </option>
+
+                    <option value="vial">
+                        Vial
+                    </option>
+
+                    <option value="ampoule">
+                        Ampoule
+                    </option>
+
+                    <option value="spray">
+                        Spray
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- DYNAMIC CATEGORY -->
+
+            <div class="form-group">
+
+                <label>
+                    Therapeutic Category <span class="required">*</span>
+                </label>
+
+                <select
+                    id="drugCategory"
+                    required
+                >
+
+                    <option value="">
+                        Select medicine form first
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Manufacturer / Company
+                </label>
+
+                <input
+                    placeholder="e.g. Emzor Pharmaceutical"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Strength
+                </label>
+
+                <input
+                    placeholder="e.g. 500 mg"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Prescription Required?
+                </label>
+
+                <select>
+
+                    <option>
+                        No
+                    </option>
+
+                    <option>
+                        Yes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    NAFDAC Registration No.
+                </label>
+
+                <input
+                    placeholder="e.g. A4-1234"
+                >
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- COMPOSITION -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            2. Drug Strength & Measurements
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Active Ingredient
+                </label>
+
+                <input
+                    placeholder="e.g. Paracetamol"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    MG
+                </label>
+
+                <input
+                    type="number"
+                    placeholder="500"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    ML
+                </label>
+
+                <input
+                    type="number"
+                    placeholder="100"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Volume / Net Content
+                </label>
+
+                <input
+                    placeholder="e.g. 100 ml"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Concentration
+                </label>
+
+                <input
+                    placeholder="e.g. 5mg/ml"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Units Per Pack
+                </label>
+
+                <input
+                    placeholder="e.g. 20 tablets"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Route of Administration
+                </label>
+
+                <select>
+
+                    <option>Oral</option>
+                    <option>Topical</option>
+                    <option>Inhalation</option>
+                    <option>Intravenous</option>
+                    <option>Intramuscular</option>
+                    <option>Subcutaneous</option>
+                    <option>Ophthalmic</option>
+                    <option>Nasal</option>
+                    <option>Rectal</option>
+                    <option>Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Storage Requirement
+                </label>
+
+                <input
+                    placeholder="e.g. Store below 25°C"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BATCH -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            3. Batch & Expiry Information
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Batch Number <span class="required">*</span>
+                </label>
+
+                <input
+                    placeholder="e.g. PCM-2401"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Manufacturing Date <span class="required">*</span>
+                </label>
+
+                <input
+                    type="date"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Expiry Date <span class="required">*</span>
+                </label>
+
+                <input
+                    type="date"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Supplier
+                </label>
+
+                <select>
+
+                    <option>
+                        Select Supplier
+                    </option>
+
+                    <option>
+                        Emzor Pharmaceutical
+                    </option>
+
+                    <option>
+                        Fidson Healthcare
+                    </option>
+
+                    <option>
+                        May & Baker
+                    </option>
+
+                    <option>
+                        Juhel Nigeria
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Purchase Price
+                </label>
+
+                <input
+                    type="number"
+                    placeholder="e.g. 350"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Reorder Level
+                </label>
+
+                <input
+                    type="number"
+                    placeholder="e.g. 20"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PACKAGING -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            4. Quantity & Packaging
+        </div>
+
+
+        <p class="packaging-help">
+            Add only the packaging units that apply to this medicine.
+            Examples include tablet, capsule, bottle, box, carton, tube,
+            sachet, vial, ampoule and inhaler.
+        </p>
+
+
+        <br>
+
+
+        <div class="table-wrapper">
+
+            <table class="packaging-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Packaging Unit
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Selling Price
+                        </th>
+
+                        <th>
+                            Unit Description
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <tr>
+
+                        <td>
+                            <select>
+                                <option>Tablet</option>
+                                <option>Capsule</option>
+                                <option>Bottle</option>
+                                <option>Box</option>
+                                <option>Carton</option>
+                                <option>Tube</option>
+                                <option>Sachet</option>
+                                <option>Vial</option>
+                                <option>Ampoule</option>
+                                <option>Inhaler</option>
+                                <option>Piece</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="120"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="₦50"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                placeholder="1 tablet"
+                            >
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            <select>
+
+                                <option>Box</option>
+                                <option>Tablet</option>
+                                <option>Capsule</option>
+                                <option>Bottle</option>
+                                <option>Carton</option>
+                                <option>Tube</option>
+                                <option>Sachet</option>
+                                <option>Vial</option>
+                                <option>Ampoule</option>
+                                <option>Inhaler</option>
+
+                            </select>
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="30"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="₦1,000"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                placeholder="20 tablets"
+                            >
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            <select>
+
+                                <option>Carton</option>
+                                <option>Box</option>
+                                <option>Bottle</option>
+                                <option>Tube</option>
+                                <option>Sachet</option>
+                                <option>Vial</option>
+
+                            </select>
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="5"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                placeholder="₦4,500"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                placeholder="30 boxes"
+                            >
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- IDENTIFICATION -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            5. Identification
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Barcode
+                </label>
+
+                <input
+                    placeholder="e.g. 8901234567890"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Barcode Type
+                </label>
+
+                <select>
+
+                    <option>EAN-13</option>
+                    <option>EAN-8</option>
+                    <option>UPC</option>
+                    <option>Code 128</option>
+                    <option>Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    SKU
+                </label>
+
+                <input
+                    placeholder="e.g. SKU-PCM-500"
+                >
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- SAFETY -->
+
+    <div class="form-section">
+
+        <div class="form-section-title">
+            6. Safety Information
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group full">
+
+                <label>
+                    Warnings
+                </label>
+
+                <textarea
+                    placeholder="Enter important warnings..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Contraindications
+                </label>
+
+                <textarea
+                    placeholder="Enter contraindications..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Side Effects
+                </label>
+
+                <textarea
+                    placeholder="Enter known side effects..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Additional Notes
+                </label>
+
+                <textarea
+                    placeholder="Additional medicine information..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div style="
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
+    ">
+
+        <button
+            type="button"
+            class="secondary-btn"
+            onclick="openPage('drugs')"
+        >
+            Cancel
+        </button>
+
+        <button
+            type="button"
+            class="secondary-btn"
+            onclick="showToast('Medicine saved as draft.')"
+        >
+            Save Draft
+        </button>
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Save Medicine
+        </button>
+
+    </div>
+
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     DRUG DETAILS + AI
+===================================================== -->
+
+<div class="page" id="drug-details">
+
+
+    <div class="inner-header">
+
+        <div>
+
+            <h2>
+                Drug Details
+            </h2>
+
+            <p>
+                Complete medicine information and AI safety review.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="drug-hero">
+
+        <div class="drug-title">
+
+            <div class="drug-icon">
+                💊
+            </div>
+
+            <div>
+
+                <h2>
+                    Paracetamol 500mg
+                </h2>
+
+                <p>
+                    Brand: Panadol • Code: PCM-500 • Barcode: 8901234567890
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="drug-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="showToast('Edit medicine opened.')"
+            >
+                Edit
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="showToast('Medicine selected for POS.')"
+            >
+                Add to POS
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="detail-grid">
+
+
+        <!-- INFORMATION -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h3>
+                    Medicine Information
+                </h3>
+
+            </div>
+
+
+            <div class="info-grid">
+
+
+                <div class="info-box">
+                    <small>Generic Name</small>
+                    <strong>Paracetamol</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Brand Name</small>
+                    <strong>Panadol</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Form</small>
+                    <strong>Tablet</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Category</small>
+                    <strong>Analgesic</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Strength</small>
+                    <strong>500 mg</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>NAFDAC Reg.</small>
+                    <strong>A4-1234</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Manufacturer</small>
+                    <strong>Emzor</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Batch</small>
+                    <strong>PCM-2401</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Available Quantity</small>
+                    <strong>120 tablets</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Manufacturing Date</small>
+                    <strong>20 Apr 2025</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Expiry Date</small>
+                    <strong>20 Apr 2027</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Prescription</small>
+                    <strong>Not Required</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Selling Price</small>
+                    <strong>₦50 / tablet</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Box Price</small>
+                    <strong>₦1,000</strong>
+                </div>
+
+
+                <div class="info-box">
+                    <small>Carton Price</small>
+                    <strong>₦4,500</strong>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- AI -->
+
+        <div class="ai-card">
+
+            <div class="ai-header">
+
+                <div class="ai-icon">
+                    🤖
+                </div>
+
+                <div>
+
+                    <h3>
+                        AI Drug Safety Assistant
+                    </h3>
+
+                    <p>
+                        Decision-support information
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-warning">
+
+                <strong>
+                    ✓ Basic Safety Check
+                </strong>
+
+                <p>
+                    No immediate system-rule warning was detected
+                    from the available medicine information.
+                </p>
+
+            </div>
+
+
+            <div class="ai-suggestion">
+
+                <strong>
+                    💡 AI Suggestion
+                </strong>
+
+                <p>
+                    Verify the patient's age, allergies, current
+                    medicines and relevant clinical history before
+                    dispensing where clinically appropriate.
+                </p>
+
+            </div>
+
+
+            <div class="ai-suggestion">
+
+                <strong>
+                    ⚠️ Important
+                </strong>
+
+                <p>
+                    Avoid duplicate paracetamol-containing products
+                    when reviewing a patient's medication list.
+                </p>
+
+            </div>
+
+
+            <div class="ai-suggestion">
+
+                <strong>
+                    📦 Inventory Suggestion
+                </strong>
+
+                <p>
+                    Current stock is above the configured reorder
+                    level. No immediate replenishment recommendation.
+                </p>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                style="width:100%;margin-top:12px;"
+                onclick="runAIAnalysis()"
+            >
+                Run AI Safety Analysis
+            </button>
+
+
+            <div class="ai-note">
+                AI output is decision-support information and does
+                not replace professional clinical judgment, pharmacy
+                procedures, product information or applicable guidance.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     INVENTORY
+===================================================== -->
+
+<div class="page" id="inventory">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Inventory</h2>
+            <p>Complete stock overview.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="openPage('stock-in')"
+        >
+            + Stock In
+        </button>
+
+    </div>
+
+
+    <div class="stock-grid">
+
+        <div class="stock-card stock-total">
+            <h3>Total Available</h3>
+            <div class="stock-value">1,248</div>
+            <p>Units</p>
+        </div>
+
+        <div class="stock-card stock-low">
+            <h3>Low Stock</h3>
+            <div class="stock-value">17</div>
+            <p>Need attention</p>
+        </div>
+
+        <div class="stock-card stock-out">
+            <h3>Out of Stock</h3>
+            <div class="stock-value">18</div>
+            <p>Unavailable</p>
+        </div>
+
+        <div class="stock-card stock-expired">
+            <h3>Expired</h3>
+            <div class="stock-value">7</div>
+            <p>Blocked from sale</p>
+        </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:15px;">
+
+        <div class="card-header">
+            <h3>Current Stock</h3>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Batch</th>
+                        <th>Quantity</th>
+                        <th>Reorder Level</th>
+                        <th>Expiry</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Paracetamol 500mg</td>
+                        <td>PCM-2401</td>
+                        <td>120</td>
+                        <td>20</td>
+                        <td>20 Apr 2027</td>
+                        <td>
+                            <span class="badge badge-success">
+                                Healthy
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Artemether 40mg</td>
+                        <td>ART-2204</td>
+                        <td>12</td>
+                        <td>20</td>
+                        <td>10 Dec 2026</td>
+                        <td>
+                            <span class="badge badge-warning">
+                                Low
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Vitamin C</td>
+                        <td>VTC-9088</td>
+                        <td>0</td>
+                        <td>15</td>
+                        <td>10 Jan 2028</td>
+                        <td>
+                            <span class="badge badge-danger">
+                                Out
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     STOCK IN
+===================================================== -->
+
+<div class="page" id="stock-in">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Stock In</h2>
+            <p>Record incoming medicine stock.</p>
+        </div>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Medicine</label>
+                <select>
+                    <option>Paracetamol 500mg — Panadol</option>
+                    <option>Amoxicillin 500mg — Amoxil</option>
+                    <option>Artemether 40mg — Lonart</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Batch Number</label>
+                <input placeholder="e.g. PCM-2508">
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" placeholder="e.g. 200">
+            </div>
+
+            <div class="form-group">
+                <label>Packaging Unit</label>
+                <select>
+                    <option>Tablet</option>
+                    <option>Box</option>
+                    <option>Carton</option>
+                    <option>Bottle</option>
+                    <option>Vial</option>
+                    <option>Tube</option>
+                    <option>Sachet</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Supplier</label>
+                <select>
+                    <option>Emzor Pharmaceutical</option>
+                    <option>Fidson Healthcare</option>
+                    <option>May & Baker</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Purchase Price</label>
+                <input type="number" placeholder="₦">
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Stock-in recorded successfully.')"
+        >
+            Record Stock In
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     STOCK MOVEMENT
+===================================================== -->
+
+<div class="page" id="stock-movement">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Stock Movement</h2>
+            <p>Track all inventory movements.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Drug</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>User</th>
+                    <th>Reference</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>28 Aug 2026</td>
+                    <td>Paracetamol</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Stock In
+                        </span>
+                    </td>
+                    <td>+200</td>
+                    <td>Admin</td>
+                    <td>PO-2201</td>
+                </tr>
+
+                <tr>
+                    <td>28 Aug 2026</td>
+                    <td>Amoxicillin</td>
+                    <td>
+                        <span class="badge badge-blue">
+                            Sale
+                        </span>
+                    </td>
+                    <td>-5</td>
+                    <td>John</td>
+                    <td>INV-1057</td>
+                </tr>
+
+                <tr>
+                    <td>28 Aug 2026</td>
+                    <td>Ibuprofen</td>
+                    <td>
+                        <span class="badge badge-danger">
+                            Adjustment
+                        </span>
+                    </td>
+                    <td>-2</td>
+                    <td>Admin</td>
+                    <td>ADJ-008</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     POS
+===================================================== -->
+
+<div class="page" id="pos">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>POS / Billing</h2>
+            <p>Process sales, dispensing and payments.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="filter-bar">
+
+            <input
+                id="posSearch"
+                placeholder="Search drug by brand name..."
+                oninput="posSearch()"
+            >
+
+            <button
+                class="secondary-btn"
+                onclick="showToast('Barcode scanner ready.')"
+            >
+                📷 Scan Barcode
+            </button>
+
+        </div>
+
+
+        <div id="posResult"></div>
+
+
+        <div style="
+            margin-top:15px;
+            border-top:1px solid var(--border);
+            padding-top:15px;
+        ">
+
+            <div class="card-header">
+                <h3>Shopping Cart</h3>
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Drug</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="cartBody">
+
+                        <tr>
+                            <td>Paracetamol 500mg</td>
+                            <td>2</td>
+                            <td>₦500</td>
+                            <td>₦1,000</td>
+                            <td>
+                                <button
+                                    class="secondary-btn"
+                                    onclick="showToast('Item removed.')"
+                                >
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div style="
+                margin-top:15px;
+                padding:15px;
+                background:var(--primary-light);
+                border-radius:9px;
+            ">
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    font-size:9px;
+                    margin-bottom:6px;
+                ">
+                    <span>Subtotal</span>
+                    <strong>₦1,000</strong>
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    font-size:9px;
+                    margin-bottom:6px;
+                ">
+                    <span>Discount</span>
+                    <strong>₦0</strong>
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    font-size:13px;
+                ">
+                    <strong>Total</strong>
+                    <strong style="color:var(--primary);">
+                        ₦1,000
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <br>
+
+            <button
+                class="primary-btn"
+                onclick="showToast('Checkout opened.')"
+            >
+                Proceed to Payment
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PRESCRIPTIONS
+===================================================== -->
+
+<div class="page" id="prescriptions">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Prescriptions</h2>
+            <p>Review and manage pharmacy prescriptions.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Prescription</th>
+                    <th>Customer</th>
+                    <th>Medicine</th>
+                    <th>Prescriber</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>RX-2031</td>
+                    <td>Customer A</td>
+                    <td>Amoxicillin 500mg</td>
+                    <td>Dr. Example</td>
+                    <td>28 Aug 2026</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Dispensed
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>RX-2032</td>
+                    <td>Customer B</td>
+                    <td>Artemether 40mg</td>
+                    <td>Dr. Example</td>
+                    <td>28 Aug 2026</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Pending
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CUSTOMERS
+===================================================== -->
+
+<div class="page" id="customers">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Customers</h2>
+            <p>Manage pharmacy customer records.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Add Customer form opened.')"
+        >
+            + Add Customer
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="filter-bar">
+
+            <input
+                placeholder="Search customer..."
+            >
+
+            <button class="secondary-btn">
+                Clear
+            </button>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Purchase History</th>
+                    <th>Prescription History</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>CUS-0012</td>
+                    <td>Customer A</td>
+                    <td>0803 *** 1122</td>
+                    <td>24 transactions</td>
+                    <td>4 prescriptions</td>
+                    <td>
+                        <button class="secondary-btn">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>CUS-0013</td>
+                    <td>Customer B</td>
+                    <td>0806 *** 4477</td>
+                    <td>8 transactions</td>
+                    <td>2 prescriptions</td>
+                    <td>
+                        <button class="secondary-btn">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SUPPLIERS
+===================================================== -->
+
+<div class="page" id="suppliers">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Suppliers</h2>
+            <p>Manage pharmacy suppliers.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Add Supplier form opened.')"
+        >
+            + Add Supplier
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Supplier</th>
+                    <th>Contact</th>
+                    <th>Phone</th>
+                    <th>Drugs Supplied</th>
+                    <th>Last Stock-In</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Emzor Pharmaceutical</td>
+                    <td>Sales Department</td>
+                    <td>0800 *** 2211</td>
+                    <td>42</td>
+                    <td>27 Aug 2026</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Active
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Fidson Healthcare</td>
+                    <td>Accounts</td>
+                    <td>0800 *** 3399</td>
+                    <td>28</td>
+                    <td>25 Aug 2026</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Active
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     RETURNS / REFUNDS
+===================================================== -->
+
+<div class="page" id="returns">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Returns & Refunds</h2>
+            <p>Process authorized medicine returns and refunds.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="openRefundModal()"
+        >
+            + Process Refund
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="filter-bar">
+
+            <input
+                placeholder="Search invoice..."
+            >
+
+            <select>
+
+                <option>
+                    All Return Status
+                </option>
+
+                <option>
+                    Pending
+                </option>
+
+                <option>
+                    Approved
+                </option>
+
+                <option>
+                    Refunded
+                </option>
+
+            </select>
+
+            <input
+                type="date"
+            >
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Return ID</th>
+                    <th>Invoice</th>
+                    <th>Drug</th>
+                    <th>Qty</th>
+                    <th>Reason</th>
+                    <th>Refund</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>RET-0091</td>
+                    <td>INV-1040</td>
+                    <td>Amoxicillin</td>
+                    <td>2</td>
+                    <td>Wrong item</td>
+                    <td>₦3,000</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Refunded
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>RET-0092</td>
+                    <td>INV-1047</td>
+                    <td>Paracetamol</td>
+                    <td>5</td>
+                    <td>Customer return</td>
+                    <td>₦2,500</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Pending
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ALERTS
+===================================================== -->
+
+<div class="page" id="alerts">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Alerts</h2>
+            <p>Important pharmacy notifications.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="ai-warning">
+
+            <strong>
+                ⚠️ 17 Low Stock Medicines
+            </strong>
+
+            <p>
+                Several medicines have reached their reorder level.
+            </p>
+
+            <button
+                class="primary-btn"
+                style="margin-top:7px;"
+                onclick="openPage('low-stock')"
+            >
+                View Low Stock
+            </button>
+
+        </div>
+
+
+        <div class="ai-warning">
+
+            <strong>
+                ⏰ 32 Medicines Expiring Soon
+            </strong>
+
+            <p>
+                Review medicine batches approaching their expiry dates.
+            </p>
+
+            <button
+                class="primary-btn"
+                style="margin-top:7px;"
+                onclick="openPage('expiry')"
+            >
+                View Expiry
+            </button>
+
+        </div>
+
+
+        <div class="ai-warning">
+
+            <strong>
+                🚫 7 Expired Medicines
+            </strong>
+
+            <p>
+                These items must not be dispensed.
+            </p>
+
+            <button
+                class="primary-btn"
+                style="margin-top:7px;"
+                onclick="openPage('expiry')"
+            >
+                Review
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     AI
+===================================================== -->
+
+<div class="page" id="ai">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>AI Drug Safety Assistant</h2>
+            <p>
+                AI-powered decision-support interface for medicine review.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="detail-grid">
+
+        <div class="card">
+
+            <div class="form-group">
+
+                <label>
+                    Select Drug
+                </label>
+
+                <select id="aiDrug">
+
+                    <option>
+                        Paracetamol 500mg
+                    </option>
+
+                    <option>
+                        Amoxicillin 500mg
+                    </option>
+
+                    <option>
+                        Artemether 40mg
+                    </option>
+
+                    <option>
+                        Ceftriaxone 1g
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <br>
+
+
+            <div class="form-group">
+
+                <label>
+                    Information to Analyze
+                </label>
+
+                <select
+                    id="aiCheck"
+                    onchange="showAISuggestion()"
+                >
+
+                    <option value="">
+                        Select an analysis
+                    </option>
+
+                    <option value="dosage">
+                        Dosage Guidance
+                    </option>
+
+                    <option value="allergy">
+                        Allergy Warning
+                    </option>
+
+                    <option value="contra">
+                        Contraindications
+                    </option>
+
+                    <option value="interaction">
+                        Drug Interaction
+                    </option>
+
+                    <option value="side">
+                        Side Effects
+                    </option>
+
+                    <option value="prescription">
+                        Prescription Review
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                class="primary-btn"
+                onclick="runAIAnalysis()"
+            >
+                🤖 Analyze
+            </button>
+
+        </div>
+
+
+        <div
+            class="ai-card"
+            id="aiOutput"
+        >
+
+            <div class="ai-header">
+
+                <div class="ai-icon">
+                    🤖
+                </div>
+
+                <div>
+
+                    <h3>
+                        AI Suggestions
+                    </h3>
+
+                    <p>
+                        Suggestions appear when an important item is selected.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p style="
+                font-size:8px;
+                color:#81749b;
+            ">
+                Select an analysis type to display relevant
+                decision-support information.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REPORTS
+===================================================== -->
+
+<div class="page" id="reports">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Reports</h2>
+            <p>Daily, weekly, monthly and yearly pharmacy reports.</p>
+        </div>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+        <select id="reportPeriod">
+
+            <option value="daily">
+                Daily
+            </option>
+
+            <option value="weekly">
+                Weekly
+            </option>
+
+            <option value="monthly">
+                Monthly
+            </option>
+
+            <option value="yearly">
+                Yearly
+            </option>
+
+        </select>
+
+
+        <input
+            type="date"
+        >
+
+        <input
+            type="date"
+        >
+
+        <button class="primary-btn">
+            Generate Report
+        </button>
+
+        <button class="secondary-btn">
+            Print
+        </button>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TOTAL SALES
+            </div>
+
+            <div class="stat-value">
+                ₦5.82M
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TRANSACTIONS
+            </div>
+
+            <div class="stat-value">
+                1,248
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                DRUGS SOLD
+            </div>
+
+            <div class="stat-value">
+                4,821
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                REFUNDS
+            </div>
+
+            <div class="stat-value">
+                ₦42,500
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:15px;">
+
+        <div class="card-header">
+
+            <h3>
+                Sales Report Example
+            </h3>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Sales</th>
+                    <th>Transactions</th>
+                    <th>Refunds</th>
+                    <th>Net Sales</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>28 Aug 2026</td>
+                    <td>₦286,400</td>
+                    <td>127</td>
+                    <td>₦5,000</td>
+                    <td>₦281,400</td>
+                </tr>
+
+                <tr>
+                    <td>27 Aug 2026</td>
+                    <td>₦301,200</td>
+                    <td>139</td>
+                    <td>₦8,000</td>
+                    <td>₦293,200</td>
+                </tr>
+
+                <tr>
+                    <td>26 Aug 2026</td>
+                    <td>₦275,900</td>
+                    <td>121</td>
+                    <td>₦3,500</td>
+                    <td>₦272,400</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     EMPLOYEES
+===================================================== -->
+
+<div class="page" id="employees">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Employees</h2>
+            <p>Manage pharmacy employee accounts.</p>
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="openPage('add-employee')"
+        >
+            + Add Employee
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Employee</th>
+                    <th>ID</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>John Pharmacist</td>
+                    <td>STF-0012</td>
+                    <td>Pharmacist</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Active
+                        </span>
+                    </td>
+                    <td>10:05 AM</td>
+                    <td>
+                        <button class="secondary-btn">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Mary Cashier</td>
+                    <td>STF-0013</td>
+                    <td>Cashier</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Active
+                        </span>
+                    </td>
+                    <td>09:51 AM</td>
+                    <td>
+                        <button class="secondary-btn">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADD EMPLOYEE
+===================================================== -->
+
+<div class="page" id="add-employee">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Add Employee</h2>
+            <p>Create a pharmacy employee account.</p>
+        </div>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input placeholder="e.g. John Doe">
+            </div>
+
+            <div class="form-group">
+                <label>Employee ID</label>
+                <input placeholder="e.g. STF-0014">
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <select>
+                    <option>Pharmacist</option>
+                    <option>Cashier / Staff</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input placeholder="e.g. john.doe">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password">
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input placeholder="080...">
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Employee account created successfully.')"
+        >
+            Create Employee
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ATTENDANCE
+===================================================== -->
+
+<div class="page" id="attendance">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Attendance</h2>
+            <p>Monitor employee attendance.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Employee</th>
+                    <th>Role</th>
+                    <th>Date</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>John Pharmacist</td>
+                    <td>Pharmacist</td>
+                    <td>28 Aug 2026</td>
+                    <td>08:02 AM</td>
+                    <td>—</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Present
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Mary Cashier</td>
+                    <td>Cashier</td>
+                    <td>28 Aug 2026</td>
+                    <td>08:17 AM</td>
+                    <td>—</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Present
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     EMPLOYEE REPORTS
+===================================================== -->
+
+<div class="page" id="employee-reports">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Employee Reports</h2>
+            <p>Attendance, activity and sales information.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="filter-bar">
+
+            <select>
+                <option>All Employees</option>
+                <option>John Pharmacist</option>
+                <option>Mary Cashier</option>
+            </select>
+
+            <input type="date">
+
+            <input type="date">
+
+            <button class="primary-btn">
+                Generate
+            </button>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Employee</th>
+                    <th>Sales</th>
+                    <th>Transactions</th>
+                    <th>Attendance</th>
+                    <th>Activity</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>John Pharmacist</td>
+                    <td>₦1.82M</td>
+                    <td>421</td>
+                    <td>25/26 days</td>
+                    <td>High</td>
+                </tr>
+
+                <tr>
+                    <td>Mary Cashier</td>
+                    <td>₦1.41M</td>
+                    <td>382</td>
+                    <td>24/26 days</td>
+                    <td>High</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     AUDIT LOG
+===================================================== -->
+
+<div class="page" id="audit">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Audit Log</h2>
+            <p>Complete record of important system activities.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="filter-bar">
+
+            <input
+                placeholder="Search user, action or module..."
+            >
+
+            <select>
+
+                <option>All Users</option>
+                <option>Admin User</option>
+                <option>John Pharmacist</option>
+                <option>Mary Cashier</option>
+
+            </select>
+
+            <select>
+
+                <option>All Actions</option>
+                <option>Login</option>
+                <option>Logout</option>
+                <option>Drug Creation</option>
+                <option>Stock Adjustment</option>
+                <option>Sale</option>
+                <option>Refund</option>
+                <option>AI Override</option>
+                <option>Settings Change</option>
+
+            </select>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date/Time</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Module</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>10:05 AM</td>
+                    <td>Admin User</td>
+                    <td>Admin</td>
+                    <td>Authentication</td>
+                    <td>Login</td>
+                    <td>Successful login</td>
+                </tr>
+
+                <tr>
+                    <td>09:51 AM</td>
+                    <td>John</td>
+                    <td>Pharmacist</td>
+                    <td>POS</td>
+                    <td>Sale</td>
+                    <td>INV-1057 completed</td>
+                </tr>
+
+                <tr>
+                    <td>09:43 AM</td>
+                    <td>Mary</td>
+                    <td>Cashier</td>
+                    <td>Authentication</td>
+                    <td>Logout</td>
+                    <td>Session ended</td>
+                </tr>
+
+                <tr>
+                    <td>09:22 AM</td>
+                    <td>Admin User</td>
+                    <td>Admin</td>
+                    <td>Inventory</td>
+                    <td>Stock Adjustment</td>
+                    <td>Adjusted Ibuprofen batch</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BACKUP
+===================================================== -->
+
+<div class="page" id="backup">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Backup & Restore</h2>
+            <p>Protect and recover PharmaSense data.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3 style="font-size:12px;">
+            Create Backup
+        </h3>
+
+        <p style="
+            color:var(--muted);
+            font-size:8px;
+            margin-top:5px;
+        ">
+            Create a protected copy of pharmacy system data.
+        </p>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Backup creation started.')"
+        >
+            Create Backup
+        </button>
+
+
+        <hr
+            style="
+                margin:20px 0;
+                border:0;
+                border-top:1px solid var(--border);
+            "
+        >
+
+
+        <h3 style="font-size:12px;">
+            Backup History
+        </h3>
+
+
+        <table style="margin-top:12px;">
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Created By</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>28 Aug 2026</td>
+                    <td>Admin User</td>
+                    <td>24.8 MB</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Complete
+                        </span>
+                    </td>
+                    <td>
+                        <button
+                            class="secondary-btn"
+                            onclick="confirmRestore()"
+                        >
+                            Restore
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<div class="page" id="settings">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>System Settings</h2>
+            <p>Configure PharmaSense.</p>
+        </div>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                Pharmacy Information
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Pharmacy Name</label>
+                    <input value="PharmaSense Pharmacy">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input value="+234 800 000 0000">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input value="info@pharmacy.local">
+                </div>
+
+                <div class="form-group full">
+                    <label>Address</label>
+                    <input value="Main Pharmacy Address">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                Inventory Settings
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Low Stock Threshold</label>
+                    <input type="number" value="20">
+                </div>
+
+                <div class="form-group">
+                    <label>Expiry Warning Period</label>
+                    <select>
+                        <option>30 Days</option>
+                        <option>60 Days</option>
+                        <option>90 Days</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                POS Settings
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Tax</label>
+                    <input value="0%">
+                </div>
+
+                <div class="form-group">
+                    <label>Default Payment</label>
+                    <select>
+                        <option>Cash</option>
+                        <option>Card</option>
+                        <option>Bank Transfer</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Settings saved successfully.')"
+        >
+            Save Settings
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<div class="page" id="profile">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>My Profile</h2>
+            <p>Administrator account information.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="profile-large" style="
+            display:flex;
+            align-items:center;
+            gap:13px;
+            margin-bottom:20px;
+        ">
+
+            <div class="avatar" style="
+                width:60px;
+                height:60px;
+            ">
+                AD
+            </div>
+
+            <div>
+
+                <h3 style="font-size:15px;">
+                    Admin User
+                </h3>
+
+                <p style="
+                    color:var(--muted);
+                    font-size:8px;
+                    margin-top:4px;
+                ">
+                    Administrator • ADM-0001
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input value="Admin User">
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <input value="Administrator" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input value="admin" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Account Status</label>
+                <input value="Active" readonly>
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="showToast('Profile updated successfully.')"
+        >
+            Save Changes
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     HELP
+===================================================== -->
+
+<div class="page" id="help">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Help & Support</h2>
+            <p>PharmaSense system guidance.</p>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3 style="font-size:12px;">
+            Common Help Topics
+        </h3>
+
+        <br>
+
+        <p style="font-size:9px;line-height:2;">
+            💊 Adding and managing medicines<br>
+            📦 Recording stock-in and stock movement<br>
+            🔍 Searching and scanning drugs<br>
+            💳 Processing POS sales<br>
+            📋 Managing prescriptions<br>
+            ↩️ Processing returns and refunds<br>
+            🤖 Using the AI Safety Assistant<br>
+            📊 Generating reports<br>
+            👨‍💼 Managing employees<br>
+            💾 Creating and restoring backups<br>
+            🔐 Understanding audit logs
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BATCHES / LOW STOCK / OUT / EXPIRY
+===================================================== -->
+
+<div class="page" id="batches">
+
+    <div class="inner-header">
+        <div>
+            <h2>Medicine Batches</h2>
+            <p>Track individual medicine batches.</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Batch</th>
+                    <th>Manufacturing</th>
+                    <th>Expiry</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Paracetamol 500mg</td>
+                    <td>PCM-2401</td>
+                    <td>20 Apr 2025</td>
+                    <td>20 Apr 2027</td>
+                    <td>120</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Valid
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Ceftriaxone 1g</td>
+                    <td>CEF-3021</td>
+                    <td>15 Sep 2025</td>
+                    <td>15 Sep 2026</td>
+                    <td>25</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Expiring
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="low-stock">
+
+    <div class="inner-header">
+        <div>
+            <h2>Low Stock</h2>
+            <p>Medicines below their reorder level.</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Current</th>
+                    <th>Reorder Level</th>
+                    <th>Supplier</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Artemether 40mg</td>
+                    <td>12</td>
+                    <td>20</td>
+                    <td>Emzor</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Restock
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Ibuprofen 400mg</td>
+                    <td>8</td>
+                    <td>20</td>
+                    <td>Fidson</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Restock
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="out-stock">
+
+    <div class="inner-header">
+        <div>
+            <h2>Out of Stock</h2>
+            <p>Medicines with zero available quantity.</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Last Batch</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Vitamin C</td>
+                    <td>Vit-C Plus</td>
+                    <td>Vitamin</td>
+                    <td>VTC-9088</td>
+                    <td>
+                        <span class="badge badge-danger">
+                            Stock Out
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>ORS Sachet</td>
+                    <td>Rehydra</td>
+                    <td>Electrolyte</td>
+                    <td>ORS-4421</td>
+                    <td>
+                        <span class="badge badge-danger">
+                            Stock Out
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="expiry">
+
+    <div class="inner-header">
+        <div>
+            <h2>Expiring / Expired</h2>
+            <p>Monitor medicines approaching or past expiry.</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Batch</th>
+                    <th>Quantity</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Ceftriaxone 1g</td>
+                    <td>CEF-3021</td>
+                    <td>25</td>
+                    <td>15 Sep 2026</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            Expiring Soon
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Ibuprofen 400mg</td>
+                    <td>IBU-1902</td>
+                    <td>8</td>
+                    <td>10 Aug 2026</td>
+                    <td>
+                        <span class="badge badge-danger">
+                            Expired
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="stock-adjustment">
+
+    <div class="inner-header">
+        <div>
+            <h2>Stock Adjustment</h2>
+            <p>Make authorized inventory corrections.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Medicine</label>
+                <select>
+                    <option>Paracetamol 500mg</option>
+                    <option>Amoxicillin 500mg</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Batch</label>
+                <input placeholder="PCM-2401">
+            </div>
+
+            <div class="form-group">
+                <label>Adjustment Quantity</label>
+                <input type="number" placeholder="-2 or +10">
+            </div>
+
+            <div class="form-group full">
+                <label>Reason</label>
+                <textarea placeholder="Explain the adjustment..."></textarea>
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="confirmAdjustment()"
+        >
+            Review Adjustment
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="barcode">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Barcode Scanner</h2>
+            <p>Search a medicine using its barcode.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="form-group">
+
+            <label>
+                Barcode
+            </label>
+
+            <input
+                id="barcodeInput"
+                placeholder="Scan or enter barcode..."
+                autofocus
+            >
+
+        </div>
+
+        <br>
+
+        <button
+            class="primary-btn"
+            onclick="scanBarcode()"
+        >
+            🔍 Find Drug
+        </button>
+
+        <div id="barcodeResult" style="margin-top:15px;"></div>
+
+    </div>
+
+</div>
+
+
+<div class="page" id="drug-search">
+
+    <div class="inner-header">
+
+        <div>
+            <h2>Drug Search</h2>
+            <p>Search medicines by brand, generic name, code or barcode.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="global-search" style="width:100%;">
+
+            <span class="search-icon">🔍</span>
+
+            <input
+                id="drugSearchPage"
+                type="search"
+                placeholder="Start typing brand name..."
+                oninput="pageDrugSearch()"
+            >
+
+        </div>
+
+        <div
+            id="pageDrugResults"
+            style="margin-top:15px;"
+        ></div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+</main>
+
+
+<!-- =====================================================
+     MODAL
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="modalOverlay"
+>
+
+    <div class="modal">
+
+        <h3 id="modalTitle">
+            Confirmation
+        </h3>
+
+        <p id="modalMessage">
+            Are you sure?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                id="modalConfirm"
+            >
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+/* =====================================================
+   DATA
+===================================================== */
+
+const medicines = [
+
+    {
+        name:"Paracetamol 500mg",
+        brand:"Panadol",
+        generic:"Paracetamol",
+        code:"PCM-500",
+        barcode:"8901234567890",
+        category:"Analgesic",
+        form:"Tablet",
+        stock:120,
+        expiry:"20 Apr 2027",
+        price:500
+    },
+
+    {
+        name:"Amoxicillin 500mg",
+        brand:"Amoxil",
+        generic:"Amoxicillin",
+        code:"AMX-500",
+        barcode:"8901234567891",
+        category:"Antibiotic",
+        form:"Capsule",
+        stock:45,
+        expiry:"15 Feb 2027",
+        price:1500
+    },
+
+    {
+        name:"Artemether 40mg",
+        brand:"Lonart",
+        generic:"Artemether",
+        code:"ART-040",
+        barcode:"8901234567892",
+        category:"Antimalarial",
+        form:"Tablet",
+        stock:12,
+        expiry:"10 Dec 2026",
+        price:2200
+    },
+
+    {
+        name:"Ceftriaxone 1g",
+        brand:"Rocephin",
+        generic:"Ceftriaxone",
+        code:"CEF-1000",
+        barcode:"8901234567893",
+        category:"Antibiotic",
+        form:"Vial",
+        stock:25,
+        expiry:"15 Sep 2026",
+        price:3500
+    },
+
+    {
+        name:"Vitamin C 1000mg",
+        brand:"Vit-C Plus",
+        generic:"Ascorbic Acid",
+        code:"VTC-1000",
+        barcode:"8901234567894",
+        category:"Vitamin",
+        form:"Tablet",
+        stock:0,
+        expiry:"10 Jan 2028",
+        price:1000
+    }
+
+];
+
+
+/* =====================================================
+   PAGE INFORMATION
+===================================================== */
+
+const pageInfo = {
+
+    dashboard:[
+        "Admin Dashboard",
+        "Complete pharmacy operational overview"
+    ],
+
+    pos:[
+        "POS / Billing",
+        "Process sales, dispensing and payments"
+    ],
+
+    drugs:[
+        "All Drugs",
+        "Complete medicine database"
+    ],
+
+    "add-drug":[
+        "Add Medicine",
+        "Create a complete medicine record"
+    ],
+
+    "drug-search":[
+        "Drug Search",
+        "Search medicines quickly"
+    ],
+
+    barcode:[
+        "Barcode Scanner",
+        "Find medicine by barcode"
+    ],
+
+    "drug-details":[
+        "Drug Details",
+        "Medicine information and AI safety review"
+    ],
+
+    inventory:[
+        "Inventory",
+        "Complete stock overview"
+    ],
+
+    "stock-in":[
+        "Stock In",
+        "Record incoming medicine stock"
+    ],
+
+    "stock-adjustment":[
+        "Stock Adjustment",
+        "Authorized inventory corrections"
+    ],
+
+    "stock-movement":[
+        "Stock Movement",
+        "Track inventory movements"
+    ],
+
+    batches:[
+        "Medicine Batches",
+        "Track individual medicine batches"
+    ],
+
+    "low-stock":[
+        "Low Stock",
+        "Medicines below reorder level"
+    ],
+
+    "out-stock":[
+        "Out of Stock",
+        "Medicines with zero stock"
+    ],
+
+    expiry:[
+        "Expiring / Expired",
+        "Monitor medicine expiry"
+    ],
+
+    prescriptions:[
+        "Prescriptions",
+        "Review and manage prescriptions"
+    ],
+
+    customers:[
+        "Customers",
+        "Manage pharmacy customer records"
+    ],
+
+    suppliers:[
+        "Suppliers",
+        "Manage pharmacy suppliers"
+    ],
+
+    returns:[
+        "Returns & Refunds",
+        "Process authorized returns and refunds"
+    ],
+
+    alerts:[
+        "Alerts",
+        "Important pharmacy notifications"
+    ],
+
+    ai:[
+        "AI Drug Safety Assistant",
+        "AI-powered decision-support interface"
+    ],
+
+    reports:[
+        "Reports",
+        "Daily, weekly, monthly and yearly reports"
+    ],
+
+    employees:[
+        "Employees",
+        "Manage pharmacy employee accounts"
+    ],
+
+    "add-employee":[
+        "Add Employee",
+        "Create a pharmacy employee account"
+    ],
+
+    attendance:[
+        "Attendance",
+        "Monitor employee attendance"
+    ],
+
+    "employee-reports":[
+        "Employee Reports",
+        "Attendance, activity and sales"
+    ],
+
+    audit:[
+        "Audit Log",
+        "Complete system activity records"
+    ],
+
+    backup:[
+        "Backup & Restore",
+        "Protect and recover system data"
+    ],
+
+    settings:[
+        "System Settings",
+        "Configure PharmaSense"
+    ],
+
+    profile:[
+        "My Profile",
+        "Administrator account information"
+    ],
+
+    help:[
+        "Help & Support",
+        "PharmaSense system guidance"
+    ]
+
+};
+
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+function openPage(page){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(p=>{
+            p.classList.remove("active");
+        });
+
+
+    const target =
+        document.getElementById(page);
+
+
+    if(target){
+
+        target.classList.add("active");
+
+    }
+
+
+    if(pageInfo[page]){
+
+        document
+            .getElementById("pageTitle")
+            .textContent =
+            pageInfo[page][0];
+
+
+        document
+            .getElementById("pageSubtitle")
+            .textContent =
+            pageInfo[page][1];
+
+    }
+
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("show");
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   NAVIGATION EVENTS
+===================================================== */
+
+document
+    .querySelectorAll("[data-page]")
+    .forEach(button=>{
+
+        button.addEventListener("click",()=>{
+
+            document
+                .querySelectorAll(
+                    ".nav-btn,.submenu button"
+                )
+                .forEach(item=>{
+                    item.classList.remove("active");
+                });
+
+
+            button.classList.add("active");
+
+
+            openPage(
+                button.dataset.page
+            );
+
+        });
+
+    });
+
+
+/* =====================================================
+   DROPDOWNS
+===================================================== */
+
+document
+    .querySelectorAll(".dropdown")
+    .forEach(button=>{
+
+        button.addEventListener("click",()=>{
+
+            const submenu =
+                button.nextElementSibling;
+
+
+            const wasOpen =
+                submenu.classList.contains("open");
+
+
+            document
+                .querySelectorAll(".submenu")
+                .forEach(menu=>{
+                    menu.classList.remove("open");
+                });
+
+
+            document
+                .querySelectorAll(".dropdown")
+                .forEach(btn=>{
+                    btn.classList.remove("open");
+                });
+
+
+            if(!wasOpen){
+
+                submenu.classList.add("open");
+
+                button.classList.add("open");
+
+            }
+
+        });
+
+    });
+
+
+/* =====================================================
+   MOBILE SIDEBAR
+===================================================== */
+
+function toggleSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("show");
+
+}
+
+
+/* =====================================================
+   GLOBAL DRUG SEARCH
+===================================================== */
+
+const globalSearch =
+    document.getElementById("globalSearch");
+
+const globalResults =
+    document.getElementById("globalResults");
+
+
+globalSearch.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            this.value
+                .toLowerCase()
+                .trim();
+
+
+        globalResults.innerHTML = "";
+
+
+        if(!value){
+
+            globalResults.classList.remove("show");
+
+            return;
+
+        }
+
+
+        const results =
+            medicines
+                .filter(medicine =>
+
+                    medicine.brand
+                        .toLowerCase()
+                        .startsWith(value)
+
+                    ||
+
+                    medicine.name
+                        .toLowerCase()
+                        .startsWith(value)
+
+                    ||
+
+                    medicine.generic
+                        .toLowerCase()
+                        .startsWith(value)
+
+                    ||
+
+                    medicine.code
+                        .toLowerCase()
+                        .includes(value)
+
+                    ||
+
+                    medicine.barcode
+                        .includes(value)
+
+                )
+                .sort((a,b)=>
+                    a.brand.localeCompare(b.brand)
+                );
+
+
+        if(!results.length){
+
+            globalResults.innerHTML = `
+
+                <div class="search-result">
+
+                    <strong>
+                        No drug found.
+                    </strong>
+
+                    <small>
+                        Try the brand name, generic name,
+                        drug code or barcode.
+                    </small>
+
+                </div>
+
+            `;
+
+        }
+        else{
+
+            results.forEach(medicine=>{
+
+                const div =
+                    document.createElement("div");
+
+
+                div.className =
+                    "search-result";
+
+
+                div.innerHTML = `
+
+                    <strong>
+                        <span class="brand-letter">
+                            ${medicine.brand}
+                        </span>
+                        — ${medicine.name}
+                    </strong>
+
+                    <small>
+                        ${medicine.category}
+                        · ${medicine.form}
+                        · Stock: ${medicine.stock}
+                        · Expiry: ${medicine.expiry}
+                    </small>
+
+                `;
+
+
+                div.addEventListener(
+                    "click",
+                    ()=>{
+
+                        globalResults
+                            .classList
+                            .remove("show");
+
+                        globalSearch.value =
+                            medicine.brand;
+
+                        openPage("drug-details");
+
+                    }
+                );
+
+
+                globalResults.appendChild(div);
+
+            });
+
+        }
+
+
+        globalResults.classList.add("show");
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            !event.target.closest(".global-search")
+        ){
+
+            globalResults
+                .classList
+                .remove("show");
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DYNAMIC MEDICINE CATEGORY
+===================================================== */
+
+const categoryMap = {
+
+    tablet:[
+        "Analgesics",
+        "Antibiotics",
+        "Antimalarials",
+        "Antihypertensives",
+        "Antidiabetics",
+        "Vitamins",
+        "Antihistamines",
+        "Antacids",
+        "Antifungals",
+        "Contraceptives",
+        "Other"
+    ],
+
+    capsule:[
+        "Antibiotics",
+        "Antifungals",
+        "Antimalarials",
+        "Analgesics",
+        "Vitamins",
+        "Gastrointestinal",
+        "Other"
+    ],
+
+    liquid:[
+        "Antibiotics",
+        "Antimalarials",
+        "Cough & Cold",
+        "Vitamins",
+        "Antacids",
+        "Analgesics",
+        "Paediatric Medicines",
+        "Other"
+    ],
+
+    inhaler:[
+        "Asthma / Respiratory",
+        "COPD / Respiratory",
+        "Allergy",
+        "Other"
+    ],
+
+    injection:[
+        "Antibiotics",
+        "Analgesics",
+        "Antimalarials",
+        "Vaccines",
+        "Emergency Medicines",
+        "Other"
+    ],
+
+    cream:[
+        "Antifungals",
+        "Antibiotics",
+        "Dermatological",
+        "Steroids",
+        "Other"
+    ],
+
+    ointment:[
+        "Antibiotics",
+        "Antifungals",
+        "Dermatological",
+        "Pain Relief",
+        "Other"
+    ],
+
+    gel:[
+        "Pain Relief",
+        "Dermatological",
+        "Antifungals",
+        "Other"
+    ],
+
+    drops:[
+        "Eye Care",
+        "Ear Care",
+        "Nasal Care",
+        "Allergy",
+        "Other"
+    ],
+
+    sachet:[
+        "Electrolytes",
+        "Vitamins",
+        "Antimalarials",
+        "Antibiotics",
+        "Oral Rehydration",
+        "Other"
+    ],
+
+    suppository:[
+        "Pain Relief",
+        "Haemorrhoids",
+        "Laxatives",
+        "Other"
+    ],
+
+    vial:[
+        "Antibiotics",
+        "Vaccines",
+        "Emergency Medicines",
+        "Other"
+    ],
+
+    ampoule:[
+        "Analgesics",
+        "Antibiotics",
+        "Emergency Medicines",
+        "Other"
+    ],
+
+    spray:[
+        "Nasal Care",
+        "Respiratory",
+        "Dermatological",
+        "Other"
+    ],
+
+    other:[
+        "Antibiotics",
+        "Vitamins",
+        "Analgesics",
+        "Antimalarials",
+        "Antihistamines",
+        "Antacids",
+        "Antifungals",
+        "Other"
+    ]
+
+};
+
+
+function updateCategoryOptions(){
+
+    const form =
+        document.getElementById("dosageForm")
+        .value;
+
+
+    const category =
+        document.getElementById("drugCategory");
+
+
+    category.innerHTML =
+        `<option value="">
+            Select category
+        </option>`;
+
+
+    if(categoryMap[form]){
+
+        categoryMap[form].forEach(item=>{
+
+            const option =
+                document.createElement("option");
+
+            option.value = item;
+
+            option.textContent = item;
+
+            category.appendChild(option);
+
+        });
+
+    }
+
+}
+
+
+/* =====================================================
+   ADD DRUG FORM
+===================================================== */
+
+document
+    .getElementById("addDrugForm")
+    .addEventListener(
+        "submit",
+        function(event){
+
+            event.preventDefault();
+
+
+            showToast(
+                "Medicine successfully added to PharmaSense."
+            );
+
+
+            setTimeout(
+                ()=>{
+                    openPage("drugs");
+                },
+                700
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   DRUG TABLE SEARCH
+===================================================== */
+
+function filterDrugTable(value){
+
+    value =
+        value
+            .toLowerCase()
+            .trim();
+
+
+    document
+        .querySelectorAll(
+            "#drugTable tbody tr"
+        )
+        .forEach(row=>{
+
+            row.style.display =
+                row.textContent
+                    .toLowerCase()
+                    .includes(value)
+                    ? ""
+                    : "none";
+
+        });
+
+}
+
+
+/* =====================================================
+   PAGE DRUG SEARCH
+===================================================== */
+
+function pageDrugSearch(){
+
+    const value =
+        document
+            .getElementById("drugSearchPage")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const output =
+        document
+            .getElementById("pageDrugResults");
+
+
+    if(!value){
+
+        output.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const results =
+        medicines.filter(m=>
+            m.brand.toLowerCase().startsWith(value)
+            ||
+            m.name.toLowerCase().startsWith(value)
+            ||
+            m.generic.toLowerCase().startsWith(value)
+            ||
+            m.code.toLowerCase().includes(value)
+            ||
+            m.barcode.includes(value)
+        );
+
+
+    if(!results.length){
+
+        output.innerHTML = `
+            <div class="card">
+                <strong style="font-size:10px;">
+                    No drug found.
+                </strong>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    output.innerHTML =
+        results.map(m=>`
+
+            <div
+                class="card"
+                style="
+                    margin-bottom:9px;
+                    cursor:pointer;
+                "
+                onclick="openPage('drug-details')"
+            >
+
+                <strong style="font-size:10px;">
+                    ${m.brand}
+                    — ${m.name}
+                </strong>
+
+                <p style="
+                    font-size:7px;
+                    color:#819396;
+                    margin-top:4px;
+                ">
+                    ${m.category}
+                    · ${m.form}
+                    · Stock ${m.stock}
+                    · ${m.expiry}
+                </p>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+/* =====================================================
+   POS SEARCH
+===================================================== */
+
+function posSearch(){
+
+    const value =
+        document
+            .getElementById("posSearch")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const result =
+        document
+            .getElementById("posResult");
+
+
+    if(!value){
+
+        result.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const found =
+        medicines.filter(m=>
+            m.brand.toLowerCase().startsWith(value)
+            ||
+            m.name.toLowerCase().startsWith(value)
+        );
+
+
+    result.innerHTML =
+        found.map(m=>`
+
+            <div
+                class="card"
+                style="
+                    margin-bottom:8px;
+                    cursor:pointer;
+                "
+                onclick="addPOSItem('${m.name}')"
+            >
+
+                <strong style="font-size:9px;">
+                    ${m.brand} — ${m.name}
+                </strong>
+
+                <p style="
+                    font-size:7px;
+                    color:#819396;
+                    margin-top:4px;
+                ">
+                    Stock: ${m.stock}
+                    · Price: ₦${m.price.toLocaleString()}
+                </p>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+function addPOSItem(name){
+
+    showToast(
+        name + " added to cart."
+    );
+
+}
+
+
+/* =====================================================
+   BARCODE
+===================================================== */
+
+function scanBarcode(){
+
+    const value =
+        document
+            .getElementById("barcodeInput")
+            .value
+            .trim();
+
+
+    const result =
+        document
+            .getElementById("barcodeResult");
+
+
+    const medicine =
+        medicines.find(
+            m=>m.barcode === value
+        );
+
+
+    if(!medicine){
+
+        result.innerHTML = `
+
+            <div class="ai-warning">
+
+                <strong>
+                    No drug found.
+                </strong>
+
+                <p>
+                    Check the barcode and scan again.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    result.innerHTML = `
+
+        <div class="card">
+
+            <strong style="font-size:11px;">
+                ${medicine.brand}
+                — ${medicine.name}
+            </strong>
+
+            <p style="
+                font-size:8px;
+                color:#819396;
+                margin-top:5px;
+            ">
+                ${medicine.category}
+                · ${medicine.form}
+                · Stock ${medicine.stock}
+            </p>
+
+            <br>
+
+            <button
+                class="primary-btn"
+                onclick="openPage('drug-details')"
+            >
+                View Drug Details
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   AI SUGGESTIONS
+===================================================== */
+
+function showAISuggestion(){
+
+    const type =
+        document
+            .getElementById("aiCheck")
+            .value;
+
+
+    const output =
+        document
+            .getElementById("aiOutput");
+
+
+    if(!type){
+
+        output.innerHTML = `
+
+            <div class="ai-header">
+
+                <div class="ai-icon">
+                    🤖
+                </div>
+
+                <div>
+
+                    <h3>AI Suggestions</h3>
+
+                    <p>
+                        Select an analysis type.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const suggestions = {
+
+        dosage:`
+            <strong>💊 Dosage Review</strong>
+            <p>
+                Review the patient's age, indication,
+                formulation, current medicines and applicable
+                professional guidance before confirming dosage.
+            </p>
+        `,
+
+        allergy:`
+            <strong>⚠️ Allergy Review</strong>
+            <p>
+                Check documented allergies and previous
+                adverse reactions before dispensing.
+            </p>
+        `,
+
+        contra:`
+            <strong>🚨 Contraindication Review</strong>
+            <p>
+                Review the patient's relevant conditions,
+                product contraindications and professional
+                prescribing information.
+            </p>
+        `,
+
+        interaction:`
+            <strong>🔄 Interaction Review</strong>
+            <p>
+                Review the patient's complete medication list
+                for possible interactions before dispensing.
+            </p>
+        `,
+
+        side:`
+            <strong>ℹ️ Side Effect Review</strong>
+            <p>
+                Review common and clinically important adverse
+                effects and provide appropriate counselling.
+            </p>
+        `,
+
+        prescription:`
+            <strong>📋 Prescription Review</strong>
+            <p>
+                Verify medicine, strength, quantity, dosage
+                instructions and prescription requirements
+                before dispensing.
+            </p>
+        `
+
+    };
+
+
+    output.innerHTML = `
+
+        <div class="ai-header">
+
+            <div class="ai-icon">
+                🤖
+            </div>
+
+            <div>
+
+                <h3>
+                    AI Suggestion
+                </h3>
+
+                <p>
+                    Analysis generated for review
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ai-warning">
+
+            ${suggestions[type]}
+
+        </div>
+
+
+        <div class="ai-note">
+
+            AI output is decision-support information.
+            Professional clinical judgment remains required.
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   RUN AI
+===================================================== */
+
+function runAIAnalysis(){
+
+    showToast(
+        "AI safety analysis completed."
+    );
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+function openModal(
+    title,
+    message,
+    callback
+){
+
+    document
+        .getElementById("modalTitle")
+        .textContent = title;
+
+
+    document
+        .getElementById("modalMessage")
+        .textContent = message;
+
+
+    const confirmButton =
+        document
+            .getElementById("modalConfirm");
+
+
+    confirmButton.onclick =
+        function(){
+
+            callback();
+
+            closeModal();
+
+        };
+
+
+    document
+        .getElementById("modalOverlay")
+        .classList
+        .add("show");
+
+}
+
+
+function closeModal(){
+
+    document
+        .getElementById("modalOverlay")
+        .classList
+        .remove("show");
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function confirmLogout(){
+
+    openModal(
+
+        "Logout",
+
+        "Are you sure you want to log out of PharmaSense?",
+
+        function(){
+
+            showToast(
+                "Logout recorded. Ending session..."
+            );
+
+
+            /*
+              Production implementation should:
+
+              1. Invalidate backend session
+              2. Clear authentication token
+              3. Record logout in audit log
+              4. Redirect to login page
+            */
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   REFUND
+===================================================== */
+
+function openRefundModal(){
+
+    openModal(
+
+        "Confirm Refund",
+
+        "This will process the selected return and update the refund record and inventory. Continue?",
+
+        function(){
+
+            showToast(
+                "Refund processed successfully."
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   STOCK ADJUSTMENT
+===================================================== */
+
+function confirmAdjustment(){
+
+    openModal(
+
+        "Confirm Stock Adjustment",
+
+        "Please confirm that the stock adjustment is accurate and authorized.",
+
+        function(){
+
+            showToast(
+                "Stock adjustment recorded and audit logged."
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   BACKUP RESTORE
+===================================================== */
+
+function confirmRestore(){
+
+    openModal(
+
+        "Restore Backup",
+
+        "Restoring this backup may replace current system data. Are you sure you want to continue?",
+
+        function(){
+
+            showToast(
+                "Backup restore process started."
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add("show");
+
+
+    setTimeout(
+        ()=>{
+            toast.classList.remove("show");
+        },
+        3000
+    );
+
+}
+
+
+/* =====================================================
+   INITIAL STATE
+===================================================== */
+
+openPage("dashboard");
+
+</script>
+
+</body>
+</html>
